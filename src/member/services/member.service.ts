@@ -7,7 +7,7 @@ export class MemberService{
         const member = await prisma.member.create({
             data: request
         });
-        console.log(`member 객체 저장 ${JSON.stringify(member)}`);
+        console.log(`member 객체 저장`);
         return member;
     }
 }

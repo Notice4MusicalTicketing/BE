@@ -9,8 +9,9 @@ export class MemberController{
         const createMemberDto: CreateMemberDto = req.body;
         try{
             const newMember = await memberService.createMember(createMemberDto);
-            res.status(200).json(newMember);
+            res.status(201).json({message: "SUCCESS"});
         } catch (err){
+            console.error(err);
             res.status(500).json({error: "error"});
         }
     }
