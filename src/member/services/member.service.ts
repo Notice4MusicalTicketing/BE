@@ -10,4 +10,13 @@ export class MemberService{
         console.log(`member 객체 저장`);
         return member;
     }
+
+    async existMember(username: string): Promise<boolean>{
+        const member = await prisma.member.findFirst({
+            where: {
+                username: username
+            }
+        });
+        return member !== null;
+    }
 }
