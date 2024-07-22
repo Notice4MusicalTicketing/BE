@@ -35,5 +35,6 @@ const authController = new AuthController();
  *         description: 예외
  */
 router.post('/register', authController.register);
+router.post('/login', authController.login);
 
 export default router;

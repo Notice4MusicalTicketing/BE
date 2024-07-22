@@ -7,6 +7,7 @@ import swaggerSpec from "./config/swagger";
 const app = express();
 
 app.use(express.json());
+
 // Swagger UI 설정
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
