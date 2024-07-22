@@ -1,9 +1,12 @@
 import express from 'express';
-import memberRouter from './member/routes/member.route';
-import authRoute from "./autnentication/routes/auth.route";
+import session from "express-session";
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./config/swagger";
-import session from "express-session";
+
+import memberRouter from './member/routes/member.route';
+import authRoute from "./autnentication/routes/auth.route";
+
+
 
 const app = express();
 // JSON 파싱 미들웨어 설정
@@ -32,34 +35,35 @@ app.get('/', (req, res) => {
 
 // 로그인 테스트용 POST 요청
 app.post("/test", (req, res) => {
-    console.log("TEST CONSOLE");
+  console.log("TEST CONSOLE");
+  const session = req.session;
 
-    // 세션 데이터 저장
-    req.session.email = req.body.email;
-    req.session.nickName = req.body.nickName;
-    req.session.isLogined = true;
+  // request body 안에 내용이 있을 때
+  if (req.body) {
+    // 이미 로그인 중이 아니라면,
+    if (!req.session.isLogined) {
+      // session에 필요한 정보를 저장
+      session.email = req.body.email;
+      session.nickName = req.body.nickName;
+      session.isLogined = true;
+      if (req.body.isRemember) {
+      
+        console.log(req.body);
 
-    // 세션 저장 후 응답
-    req.session.save((err) => {
-        if (err) {
-            console.error('Failed to save session:', err);
-            return res.status(500).send({ result: false, message: 'Failed to save session' });
-        }
+        // 기억하길 원할 때 14일 간 cookie를 살려둠
+        const NANO_SEC_IN_A_DAY = 86400000;
+        session.cookie.maxAge = 14 * NANO_SEC_IN_A_DAY;
         
-        // 콘솔에 세션 데이터 출력
-        console.log('Session data:', req.session);
-        if(!req.session)console.log('wrong');
-
-        // 응답 본문에 세션 정보 포함
-        res.send({
-            result: true,
-            email: req.session.email,
-            nickName: req.session.nickName
-        });
-    });
+      }
+      session.save(() => {
+        // session에 저장하고, 진행할 내용
+        res.send({ result: true });
+      });
+    } else {
+      res.send({ error: "Aleady Logined" });
+    }
+  }
 });
-
-
 
 const PORT = process.env.PORT || 3000;
 
