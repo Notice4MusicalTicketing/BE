@@ -10,6 +10,9 @@ app.use(express.json());
 // Swagger UI 설정
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// Swagger UI 설정
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.use('/api/member', memberRouter);
 app.use('/api/auth', authRoute);
 

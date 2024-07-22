@@ -2,6 +2,8 @@ import {CreateMemberDto} from "../../member/dtos/member.dto";
 import validator from "validator";
 import {MemberService} from "../../member/services/member.service";
 import bcrypt from 'bcrypt';
+import {LoginRequestDto} from "../dtos/login.dto";
+import {Member} from "../../member/entities/member.entity";
 
 const memberService = new MemberService();
 
@@ -23,10 +25,27 @@ export class AuthService {
         // password 암호화
         const encryptMember: CreateMemberDto = {
             username: request.username,
-            password: await this.hashPassword(request.password)
+            password: await this.hashPassword(request.password),
+            nickname: request.nickname
         }
         // db에 저장
         await memberService.createMember(encryptMember);
+    }
+
+    async login(request: LoginRequestDto): Promise<Member>{
+        // db에서 email 검색
+        const member = await memberService.findMemberByUsername(request.username);
+        if (member === null){
+            throw new Error("해당 이메일이 존재하지 않음");
+        }
+        // password 복호화
+        if (!await this.verifyPassword(request.password ,member.password)){
+            throw new Error("이메일과 비밀번호가 일치하지 않음");
+        }
+
+        // 성공시 토큰을 반환
+
+        return member;
     }
 
     private isEmail = (email: string) : boolean => {
