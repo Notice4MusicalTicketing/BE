@@ -6,7 +6,7 @@ const options: swaggerJsdoc.Options = {
         info: {
             title: 'Notice4MusicalTicketing',
             version: '1.0.0',
-            description: '야호 ^_^',
+            description: 'Description of API',
         },
     },
     apis: [
@@ -15,7 +15,15 @@ const options: swaggerJsdoc.Options = {
         './src/**/dtos/*.ts',
         './src/**/entities/*.ts'
     ],
+    servers: [
+        {
+            url: 'http://localhost:3000',
+            description: 'Local server',
+        },
+    ],
 };
+
+
 
 const swaggerSpec = swaggerJsdoc(options);
 

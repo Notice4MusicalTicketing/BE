@@ -1,23 +1,45 @@
 import express from 'express';
-import memberRouter from './member/routes/member.route';
-import authRoute from "./autnentication/routes/auth.route";
+import session from "express-session";
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./config/swagger";
 
+import memberRouter from './member/routes/member.route';
+import authRoute from "./autnentication/routes/auth.route";
+
+import { PrismaClient } from '@prisma/client';
+
+
 const app = express();
+const prisma = new PrismaClient();
 
+// JSON 파싱 미들웨어 설정
 app.use(express.json());
-// Swagger UI 설정
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// express-session 설정
+app.use(session({
+    secret: 'your-secret-key', // 세션 암호화에 사용될 키
+    resave: false, // 세션이 수정되지 않았더라도 세션을 다시 저장할지 여부
+    saveUninitialized: true, // 초기화되지 않은 세션을 저장할지 여부
+    cookie: { secure: false } // 쿠키 설정 (HTTPS를 사용할 경우 true로 설정)
+}));
+
+
 
 // Swagger UI 설정
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
 app.use('/api/member', memberRouter);
 app.use('/api/auth', authRoute);
 
+// Handling GET / Request
+app.get('/', (req, res) => {
+    res.send('Welcome to typescript backend!');
+    console.log(req.session);
+});
+
+
 const PORT = process.env.PORT || 3000;
 
+// Server setup
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log('The application is listening on port http://localhost:' + PORT);
 });
