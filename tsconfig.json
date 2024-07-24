@@ -10,6 +10,6 @@
     "strict": true,  /* 모든 엄격한 타입-체킹 옵션을 활성화합니다. */
     "skipLibCheck": true  /* 모든 .d.ts 파일에 대한 타입 검사를 건너뜁니다. */
   },
-  "include": ["src"],  /* src 폴더를 TypeScript 컴파일 대상에 포함 */
+  "include": ["src", "fetchData.ts"],  /* src 폴더를 TypeScript 컴파일 대상에 포함 */
   "exclude": ["node_modules"]  /* node_modules 폴더를 컴파일 대상에서 제외*/
 }
