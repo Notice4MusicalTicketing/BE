@@ -1,4 +1,4 @@
-import { CreateMemberDto } from '../dtos/member.dto';
+import {CreateMemberDto} from '../dtos/member.dto';
 import prisma from '../../config/database';
 import { Member } from '../entities/member.entity';
 
@@ -18,5 +18,14 @@ export class MemberService{
             }
         });
         return member !== null;
+    }
+
+    async findMemberByUsername(username: string): Promise<Member | null>{
+        const member = await prisma.member.findFirst({
+            where: {
+                username: username
+            }
+        });
+        return member;
     }
 }
