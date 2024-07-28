@@ -1,13 +1,14 @@
 import express from 'express';
-import session from "express-session";
+import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from "./config/swagger";
-
+import swaggerSpec from './config/swagger';
 import memberRouter from './member/routes/member.route';
-import authRoute from "./autnentication/routes/auth.route";
+import authRoute from './autnentication/routes/auth.route';
 
 import { PrismaClient } from '@prisma/client';
 
+// openAPI part
+import { fetchData } from './fetchData';
 
 const app = express();
 const prisma = new PrismaClient();
@@ -23,8 +24,6 @@ app.use(session({
     cookie: { secure: false } // 쿠키 설정 (HTTPS를 사용할 경우 true로 설정)
 }));
 
-
-
 // Swagger UI 설정
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/member', memberRouter);
@@ -36,10 +35,19 @@ app.get('/', (req, res) => {
     console.log(req.session);
 });
 
-
 const PORT = process.env.PORT || 3000;
 
 // Server setup
 app.listen(PORT, () => {
     console.log('The application is listening on port http://localhost:' + PORT);
+
+    // openAPI
+    console.log('index open api start');
+    async function main() {
+        console.log('Fetching data...');
+        await fetchData();
+        console.log('Data fetch completed.');
+    }
+
+    main().catch(console.error);
 });

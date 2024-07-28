@@ -5,7 +5,6 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const apiKey = process.env.API_KEY;
 const dbConfig = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -13,31 +12,7 @@ const dbConfig = {
     database: process.env.DB_NAME,
 };
 
-async function fetchData(): Promise<void> {
-    try {
-        const response = await axios.get('https://api.example.com/data', {
-            params: {
-                key: apiKey,
-            },
-        });
-
-        const xml = response.data;
-
-        parseString(xml, { explicitArray: false }, async (err, result) => {
-            if (err) {
-                throw err;
-            }
-
-            const data = result;
-            await storeData(data);
-        });
-
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-}
-
-async function storeData(data: any): Promise<void> {
+export async function storeData(data: any): Promise<void> {
     const connection = await mysql.createConnection(dbConfig);
 
     const query = 'INSERT INTO your_table_name (field1, field2) VALUES (?, ?)';
@@ -52,5 +27,3 @@ async function storeData(data: any): Promise<void> {
         await connection.end();
     }
 }
-
-fetchData();
