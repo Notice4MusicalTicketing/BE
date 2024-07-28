@@ -1,6 +1,6 @@
 import express from 'express';
 import memberRouter from './member/routes/member.route';
-import authRoute from "./autnentication/routes/auth.route";
+import authRoute from "./authentication/routes/auth.route";
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./config/swagger";
 
