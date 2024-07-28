@@ -35,6 +35,39 @@ const authController = new AuthController();
  *         description: 예외
  */
 router.post('/register', authController.register);
+
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: 로그인 기능
+ *     description: 로그인 기능입니다. 설명은 나중에 ^^
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *     responses:
+ *       201:
+ *         description: 성공
+ *       400:
+ *         description: 예외
+ */
 router.post('/login', authController.login);
+
+router.post('/access_token', authController.regenerateAccessToken);
 
 export default router;

@@ -10,7 +10,8 @@ class JwtProvider{
     static verifyToken(token: string): TokenPayload | null{
         try{
             return jwt.verify(token, SECRET_KEY) as TokenPayload;
-        } catch (err){
+        } catch (err) {
+            console.error(err);
             return null;
         }
     }
