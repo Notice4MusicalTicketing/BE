@@ -11,15 +11,15 @@ export async function fetchData() {
         const response = await axios.get('http://www.kopis.or.kr/openApi/restful/pblprfr', {
             params: {
                 service: apiKey,
-                stdate: '20240601', // 시작 날짜를 2024년 6월 1일로 설정
-                eddate: '20240630', // 종료 날짜를 2024년 6월 30일로 설정
+                stdate: '20241001', // 시작 날짜를 2024년 3월 1일로 설정
+                eddate: '20250320', // 종료 날짜를 2024년 7월 20일로 설정
                 cpage: 1,
                 rows: 5,
-                prfstate: '02',
-                signgucode: '11',
-                signgucodesub: '1111',
-                kidstate: 'Y',
-                newsql: 'Y',
+
+                shcate: 'GGGA', // 장르 코드 (뮤지컬)
+                signgucode: '11', // 서울특별시 코드
+                prfstate: '01' // 공연 상태 (01: 공연 예정)
+                
             },
         });
 
