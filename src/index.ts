@@ -9,6 +9,7 @@ import { PrismaClient } from '@prisma/client';
 
 // openAPI part
 import { fetchData } from './fetchData';
+import { fetchDetailData } from './detailFetchData';
 
 const app = express();
 const prisma = new PrismaClient();
@@ -50,4 +51,15 @@ app.listen(PORT, () => {
     }
 
     main().catch(console.error);
+});
+
+
+app.get('/api/performance/:mt20id', async (req, res) => {
+    const { mt20id } = req.params;
+    try {
+        const detailData = await fetchDetailData(mt20id);
+        res.send(detailData);
+    } catch (error) {
+        res.status(500).send('Error fetching detail data');
+    }
 });
