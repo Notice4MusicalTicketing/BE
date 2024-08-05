@@ -9,7 +9,7 @@ const authController = new AuthController();
 * /api/auth/register:
 *   post:
     *     summary: 회원가입 기능
-*     description: 회원가입 기능입니다. 설명은 나중에 ^^
+*     description: 회원가입 기능입니다. username: 이메일 형식입니다. password: 비밀번호 조건 (최소길이 8, 숫자, 소문자, 특수문자 조합 ), nicknaame: 최대 8글자
 *     tags: [Auth]
 *     requestBody:
 *       required: true
@@ -61,7 +61,7 @@ router.post('/register', authController.register);
  * /api/auth/login:
  *   post:
  *     summary: 로그인 기능
- *     description: 로그인 기능입니다. 설명은 나중에 ^^
+ *     description: 로그인 기능입니다. username: 이메일 형식입니다. password
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -115,7 +115,7 @@ router.post('/login', authController.login);
  * /api/auth/access_token:
  *   post:
  *     summary: 액세스 토큰 재발급
- *     description: 리프레시 토큰을 이용해 새로운 액세스 토큰을 발급받습니다.
+ *     description: 리프레시 토큰을 body로 전달해주시면 됩니다.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
