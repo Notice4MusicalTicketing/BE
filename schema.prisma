@@ -15,3 +15,18 @@ model Member {
 
     @@map("member")
 }
+
+
+model Performance {
+  id           Int     @id @default(autoincrement())
+  musicalId    String  @unique  // 뮤지컬 ID (기존 mt20id)
+  name         String           // 이름 (기존 prfnm)
+  startDate    String           // 공연 시작일 (기존 prfpdfrom)
+  endDate      String           // 공연 종료일 (기존 prfpdto)
+  status       String           // 상태 (기존 prfstate)
+  ticketOpen   Boolean          // 티켓 오픈 여부 (boolean 값)
+  sessionInfo  Int          // 회차 정보 (nullable)
+  cast         String       // 출연진 (nullable)
+
+  @@map("performance")
+}

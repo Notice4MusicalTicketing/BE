@@ -14,7 +14,7 @@ export async function fetchData() {
                 stdate: '20241001', // 시작 날짜를 2024년 3월 1일로 설정
                 eddate: '20250320', // 종료 날짜를 2024년 7월 20일로 설정
                 cpage: 1,
-                rows: 5,
+                rows: 6,
 
                 shcate: 'GGGA', // 장르 코드 (뮤지컬)
                 signgucode: '11', // 서울특별시 코드
