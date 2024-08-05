@@ -12,10 +12,10 @@ export class AuthController {
         const createMemberDto: CreateMemberDto = req.body;
         try {
             await authService.register(createMemberDto);
-            res.status(201).json({message: "SUCCESS"});
+            res.status(201).json({result: true, message: "SUCCESS"});
         } catch (err: any){
             console.error(err);
-            res.status(400).json({message: err.message});
+            res.status(400).json({result: false, message: err.message});
         }
     }
 
@@ -46,7 +46,7 @@ export class AuthController {
             res.status(200).json({result: true, token});
         } catch (err: any){
             console.error(err);
-            res.status(400).json({message: err.message});
+            res.status(400).json({result: false, message: err.message});
         }
     }
 
@@ -66,7 +66,7 @@ export class AuthController {
             res.status(200).json({result: true, token});
         } catch (err: any){
             console.error(err);
-            res.status(401).json({message: err.message});
+            res.status(401).json({result: false, message: err.message});
         }
     }
 }
