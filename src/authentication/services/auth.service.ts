@@ -81,6 +81,7 @@ export class AuthService {
         const accessToken = JwtProvider.generateAccessToken({
             id: member.member_id.toString(),
             username: member.username,
+            nickname: member.nickname,
             type: "access"
         });
 
