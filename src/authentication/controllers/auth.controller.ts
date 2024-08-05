@@ -26,11 +26,13 @@ export class AuthController {
             const accessToken = JwtProvider.generateAccessToken({
                 id: member.member_id.toString(),
                 username: member.username,
+                nickname: member.nickname,
                 type: "access"
             });
             const refreshToken = JwtProvider.generateRefreshToken({
                 id: member.member_id.toString(),
                 username: member.username,
+                nickname: member.nickname,
                 type: "refresh"
             })
 
