@@ -16,7 +16,7 @@ declare module 'express-serve-static-core' {
 }
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'http://ec2-52-78-180-65.ap-northeast-2.compute.amazonaws.com:3000'],
     credentials: true,
 }));
 
