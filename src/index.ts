@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import memberRouter from './member/routes/member.route';
 import authRoute from "./authentication/routes/auth.route";
 import swaggerUi from 'swagger-ui-express';
@@ -13,6 +14,11 @@ declare module 'express-serve-static-core' {
         user?: Member;
     }
 }
+
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
 
 // 인증 미들웨어
 app.use(authMiddleware);
