@@ -3,9 +3,8 @@ import JwtProvider from "../authentication/services/jwtProvider";
 import {Member} from "../member/entities/member.entity";
 
 const whiteList = [
-    '/api/auth/access_token',
-    '/api/auth/login',
-    '/api/auth/register'
+    '/api-docs',
+    '/api/auth'
 ];
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {

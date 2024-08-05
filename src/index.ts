@@ -4,7 +4,6 @@ import authRoute from "./authentication/routes/auth.route";
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./config/swagger";
 import {authMiddleware} from "./middleware/middleware";
-import JwtProvider from "./authentication/services/jwtProvider";
 import {Member} from "./member/entities/member.entity";
 
 const app = express();
