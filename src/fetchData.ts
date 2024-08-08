@@ -11,7 +11,7 @@ export async function fetchData() {
         const response = await axios.get('http://www.kopis.or.kr/openApi/restful/pblprfr', {
             params: {
                 service: apiKey,
-                stdate: '20241001', // 시작 날짜를 2024년 3월 1일로 설정
+                stdate: '20240901', // 시작 날짜를 2024년 3월 1일로 설정
                 eddate: '20250320', // 종료 날짜를 2024년 7월 20일로 설정
                 cpage: 1,
                 rows: 6,

@@ -1,32 +1,67 @@
-generator client {
-    provider = "prisma-client-js"
-}
+// schema.prisma
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
-model Member {
-    member_id BigInt @id @default(autoincrement())
-    username  String @db.VarChar(32) @unique
-    nickname  String @db.VarChar(8)
-    password  String @db.VarChar(255)
-
-    @@map("member")
+generator client {
+  provider = "prisma-client-js"
 }
 
+model MemberInfo {
+  memberId     String  @id
+  email        String  @unique
+  password     String
+  nickname     String
+  loginStatus  String
+  wishlist     Wishlist[]
+  reviews      Review[]
+  posts        Post[]
+}
 
-model Performance {
-  id           Int     @id @default(autoincrement())
-  musicalId    String  @unique  // 뮤지컬 ID (기존 mt20id)
-  name         String           // 이름 (기존 prfnm)
-  startDate    String           // 공연 시작일 (기존 prfpdfrom)
-  endDate      String           // 공연 종료일 (기존 prfpdto)
-  status       String           // 상태 (기존 prfstate)
-  ticketOpen   Boolean          // 티켓 오픈 여부 (boolean 값)
-  sessionInfo  Int          // 회차 정보 (nullable)
-  cast         String       // 출연진 (nullable)
+model Wishlist {
+  wishlistId String @id
+  memberId   String
+  musicalId  String
+  member     MemberInfo @relation(fields: [memberId], references: [memberId])
+  musical    Musical @relation(fields: [musicalId], references: [musicalId])
+}
 
-  @@map("performance")
+model Musical {
+  musicalId   String   @id
+  name        String
+  status      String
+  roundInfo   Int
+  startDate   DateTime
+  endDate     DateTime
+  reviews     Review[]
+  wishlists   Wishlist[]
+  posts       Post[]
+}
+
+model Review {
+  reviewId   String  @id
+  memberId   String
+  musicalId  String
+  rating     Float
+  title      String
+  content    String
+  member     MemberInfo @relation(fields: [memberId], references: [memberId])
+  musical    Musical @relation(fields: [musicalId], references: [musicalId])
+}
+
+model Post {
+  postId      String   @id
+  memberId    String
+  musicalId   String
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  likeCount   Int
+  warningCount Int
+  category    String
+  member      MemberInfo @relation(fields: [memberId], references: [memberId])
+  musical     Musical @relation(fields: [musicalId], references: [musicalId])
 }
