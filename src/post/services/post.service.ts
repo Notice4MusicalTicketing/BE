@@ -5,7 +5,7 @@ import {Member} from "../../member/entities/member.entity";
 import {PostConverter} from "../entities/post.converter";
 
 export class PostService {
-    // post create
+    // post create - 게시글 작성
     async createPost(request: CreatePostDto, member: Member): Promise<Post> {
         const postSchema = await prisma.post.create({
             data: {
@@ -24,7 +24,55 @@ export class PostService {
         return post;
     }
 
-    // post update
+    // post create - 추천수
+    // todo : 나중에 테이블 추가해서 사람당 1명 기록 관리하기
+    async addLikeCount(postId: number): Promise<void> {
+        const postSchema = await prisma.post.findFirst({
+            where: {
+                post_id: BigInt(postId),
+            }
+        });
+
+        if (postSchema === null){
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        await prisma.post.update({
+            where: {
+                post_id: BigInt(postId),
+            },
+            data: {
+                like_count: {
+                    increment: 1,
+                }
+            },
+        });
+    }
+
+    // post create - 신고하기
+    // todo : 나중에 테이블 추가해서 사람당 1명 기록 관리하기
+    async addWarningCount(postId: number): Promise<void> {
+        const postSchema = await prisma.post.findFirst({
+            where: {
+                post_id: BigInt(postId),
+            }
+        });
+
+        if (postSchema === null){
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        await prisma.post.update({
+            where: {
+                post_id: BigInt(postId),
+            },
+            data: {
+                warning_count: {
+                    increment: 1,
+                }
+            },
+        });
+    }
 
     // post delete
     async deletePost(postId: number, memberId: number): Promise<void> {
