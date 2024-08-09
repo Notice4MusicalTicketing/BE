@@ -26,7 +26,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         const payload = JwtProvider.verifyToken(token);
         if (payload?.id && payload.username && payload.nickname){
             const member: Member = {
-                member_id: BigInt(payload.id),
+                member_id: Number(payload.id),
                 username: payload.username as string,
                 password: "0",
                 nickname: payload.nickname as string
