@@ -77,4 +77,42 @@ export class PostController {
             res.status(400).json({result: false, message: err.message});
         }
     }
+
+    async addLikeCount(req: Request, res: Response) {
+        const member = req.user;
+
+        if (!member){
+            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
+            return;
+        }
+
+        const {postId} = req.params;
+
+        try {
+            const addLike = await postService.addLikeCount(Number(postId));
+            res.status(201).json({result: true, message: "게시글 추천하기 성공"});
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message});
+        }
+    }
+
+    async addWarningCount(req: Request, res: Response) {
+        const member = req.user;
+
+        if (!member){
+            res.status(400).json({result: false, message: `로그인 중이 아닙니다ㅏ.`});
+            return;
+        }
+
+        const {postId} = req.params;
+
+        try {
+            const addWarning = await postService.addWarningCount(Number(postId));
+            res.status(201).json({result: true, message: "게시글 신고하기 성공"});
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message});
+        }
+    }
 }

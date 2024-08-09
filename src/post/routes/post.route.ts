@@ -11,4 +11,7 @@ router.delete('/delete_post/:postId', postController.deletePost);
 router.get('/preview', postController.getPreviewPosts);
 router.get('/:postId', postController.getPost);
 
+router.post('/addLike/:postId', postController.addLikeCount);
+router.post('/addWarning/:postId', postController.addWarningCount);
+
 export default router;
