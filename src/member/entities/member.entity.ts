@@ -1,5 +1,5 @@
 export interface Member{
-    member_id: bigint;
+    member_id: number;
     username: string;
     password: string;
     nickname: string;

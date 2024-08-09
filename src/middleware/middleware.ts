@@ -32,6 +32,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
                 nickname: payload.nickname as string
             };
             req.user = member;
+
             next();
         } else {
             throw new Error("토큰이 유효하지 않음");
