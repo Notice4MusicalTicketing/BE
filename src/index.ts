@@ -6,6 +6,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from "./config/swagger";
 import {authMiddleware} from "./middleware/middleware";
 import {Member} from "./member/entities/member.entity";
+import postRoute from "./post/routes/post.route";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/member', memberRouter);
 app.use('/api/auth', authRoute);
+app.use('/api/post', postRoute);
 
 const PORT = process.env.PORT || 3000;
 
