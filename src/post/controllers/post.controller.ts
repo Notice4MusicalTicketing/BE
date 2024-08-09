@@ -101,7 +101,7 @@ export class PostController {
         const member = req.user;
 
         if (!member){
-            res.status(400).json({result: false, message: `로그인 중이 아닙니다ㅏ.`});
+            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
             return;
         }
 
@@ -110,6 +110,26 @@ export class PostController {
         try {
             const addWarning = await postService.addWarningCount(Number(postId));
             res.status(201).json({result: true, message: "게시글 신고하기 성공"});
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message});
+        }
+    }
+
+    async updatePost(req: Request, res: Response) {
+        const updatePostDto: CreatePostDto = req.body;
+        const member = req.user;
+
+        if (!member){
+            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
+            return;
+        }
+
+        const {postId} = req.params;
+
+        try {
+            const updatePost = await postService.updatePost(Number(postId), updatePostDto, member);
+            res.status(200).json({result: true, message: "게시글 수정 성공"});
         } catch (err: any) {
             console.error(err);
             res.status(400).json({result: false, message: err.message});

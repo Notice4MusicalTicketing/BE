@@ -4,14 +4,16 @@ import {PostController} from "../controllers/post.controller";
 const router = express.Router();
 const postController = new PostController();
 
-router.post('/create_post', postController.createPost);
+router.post('/', postController.createPost);
 
-router.delete('/delete_post/:postId', postController.deletePost);
+router.delete('/:postId', postController.deletePost);
 
 router.get('/preview', postController.getPreviewPosts);
 router.get('/:postId', postController.getPost);
 
-router.post('/addLike/:postId', postController.addLikeCount);
-router.post('/addWarning/:postId', postController.addWarningCount);
+router.post('/:postId/like', postController.addLikeCount);
+router.post('/:postId/warning', postController.addWarningCount);
+
+router.patch('/:postId', postController.updatePost);
 
 export default router;

@@ -6,7 +6,7 @@ import {PostConverter} from "../entities/post.converter";
 
 export class PostService {
     // post create - 게시글 작성
-    async createPost(request: CreatePostDto, member: Member): Promise<Post> {
+    async createPost(request: CreatePostDto, member: Member): Promise<void> {
         const postSchema = await prisma.post.create({
             data: {
                 member_id: member.member_id,
@@ -15,13 +15,6 @@ export class PostService {
                 category: request.category,
             },
         });
-
-        // 변환 메서드를 사용하여 PostSchema를 Post 엔티티로 변환
-        const post = PostConverter.toEntity(postSchema);
-
-        console.log("게시물 저장");
-
-        return post;
     }
 
     // post create - 추천수
@@ -30,6 +23,7 @@ export class PostService {
         const postSchema = await prisma.post.findFirst({
             where: {
                 post_id: BigInt(postId),
+                is_deleted: false,
             }
         });
 
@@ -55,6 +49,7 @@ export class PostService {
         const postSchema = await prisma.post.findFirst({
             where: {
                 post_id: BigInt(postId),
+                is_deleted: false,
             }
         });
 
@@ -80,6 +75,7 @@ export class PostService {
             where: {
                 post_id: BigInt(postId),
                 member_id: BigInt(memberId),
+                is_deleted: false,
             }
         });
 
@@ -146,6 +142,32 @@ export class PostService {
 
 
         return postPreviews;
+    }
+
+    async updatePost(postId: number, request: CreatePostDto, member: Member): Promise<void> {
+        const postSchema = await prisma.post.findFirst({
+            where: {
+                post_id: BigInt(postId),
+                member_id: BigInt(member.member_id),
+                is_deleted: false,
+            }
+        });
+
+        if (postSchema === null){
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        await prisma.post.update({
+            where: {
+                post_id: BigInt(postId),
+                member_id: BigInt(member.member_id),
+            },
+            data: {
+                title: request.title,
+                content: request.content,
+                category: request.category,
+            },
+        });
     }
 }
 
