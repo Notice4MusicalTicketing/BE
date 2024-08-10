@@ -29,15 +29,15 @@ model Wishlist {
 }
 
 model Musical {
-  musicalId   String   @id
-  name        String
-  status      String
-  roundInfo   Int
-  startDate   DateTime
-  endDate     DateTime
-  reviews     Review[]
-  wishlists   Wishlist[]
-  posts       Post[]
+  musicalId String @id
+  name      String
+  status    String
+  roundInfo Int    
+  startDate DateTime
+  endDate   DateTime
+  reviews   Review[]
+  wishlists Wishlist[]
+  posts     Post[]
 }
 
 model Review {
