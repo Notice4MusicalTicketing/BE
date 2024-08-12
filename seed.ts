@@ -3,57 +3,97 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-    // 회원 정보 삽입
-    await prisma.memberInfo.create({
-        data: {
-            memberId: '01001',  
-            email: 'sara20041207@gmail.com',
-            password: '12345678',
-            nickname: 'Sara',
-            loginStatus: 'Y',
-        },
-    });
+  const musical1 = await prisma.musical.create({
+    data: {
+      musicalId: 'MUS001',
+      name: 'Phantom of the Opera',
+      startDate: new Date('2023-09-01'),
+      endDate: new Date('2024-01-31'),
+      status: '공연중',
+      details: {
+        create: {
+          facilityName: 'Her Majesty\'s Theatre',
+          cast: 'John Doe, Jane Smith',
+          runtime: 160,
+          ageRating: '15+',
+          productionCompany: 'Really Useful Group',
+          ticketPrice: '50-150 USD',
+          posterImagePath: '/images/phantom-poster.jpg',
+          synopsis: 'A disfigured musical genius haunts the Paris Opera House...',
+          genre: 'Musical',
+          introImages: ['/images/intro1.jpg', '/images/intro2.jpg', '/images/intro3.jpg'],
+          showtimes: 'Weekdays 7:30 PM, Weekends 2:00 PM & 7:30 PM',
+          facilityDetails: 'Her Majesty\'s Theatre, London',
+          ticketAgencies: {
+            create: [
+              {
+                name: 'TicketMaster',
+                code: 'TM001',
+                url: 'https://ticketmaster.com/phantom'
+              },
+              {
+                name: 'Broadway.com',
+                code: 'BW001',
+                url: 'https://broadway.com/phantom'
+              }
+            ]
+          }
+        }
+      }
+    }
+  });
 
-    // 뮤지컬 정보 삽입
-    await prisma.musical.create({
-        data: {
-            musicalId: '03001',
-            name: '어쩌면 해피엔딩',
-            status: '공연중',
-            roundInfo: 5,  // 필드가 정의되어 있어야 합니다.
-            startDate: new Date('2024-06-18'),
-            endDate: new Date('2024-09-08'),
-        },
-    });
+  console.log(`Created musical with ID: ${musical1.musicalId}`);
 
-    // 찜 목록 정보 삽입
-    await prisma.wishlist.create({
-        data: {
-            wishlistId: '02001',  // 숫자로 변경
-            memberId: '01001',  // 숫자로 변경
-            musicalId: '03001',  // 숫자로 변경
-        },
-    });
+  // 다른 뮤지컬 추가 예시
+  const musical2 = await prisma.musical.create({
+    data: {
+      musicalId: 'MUS002',
+      name: 'Hamilton',
+      startDate: new Date('2023-10-01'),
+      endDate: new Date('2024-02-28'),
+      status: '공연중',
+      details: {
+        create: {
+          facilityName: 'Richard Rodgers Theatre',
+          cast: 'Lin-Manuel Miranda, Phillipa Soo',
+          runtime: 165,
+          ageRating: '12+',
+          productionCompany: 'Hamilton Broadway',
+          ticketPrice: '100-200 USD',
+          posterImagePath: '/images/hamilton-poster.jpg',
+          synopsis: 'The story of America then, told by America now...',
+          genre: 'Hip-Hop Musical',
+          introImages: ['/images/hamilton-intro1.jpg', '/images/hamilton-intro2.jpg', '/images/hamilton-intro3.jpg'],
+          showtimes: 'Weekdays 8:00 PM, Weekends 3:00 PM & 8:00 PM',
+          facilityDetails: 'Richard Rodgers Theatre, New York',
+          ticketAgencies: {
+            create: [
+              {
+                name: 'TicketMaster',
+                code: 'TM002',
+                url: 'https://ticketmaster.com/hamilton'
+              },
+              {
+                name: 'Broadway.com',
+                code: 'BW002',
+                url: 'https://broadway.com/hamilton'
+              }
+            ]
+          }
+        }
+      }
+    }
+  });
 
-    // 리뷰 정보 삽입
-    await prisma.review.create({
-        data: {
-            reviewId: '04001',  // 숫자로 변경
-            memberId: '01001',  // 숫자로 변경
-            musicalId: '03001',  // 숫자로 변경
-            rating: 5.0,
-            title: '너무 좋았어요!',
-            content: '스토리와 캐스팅 모두가 너무나도 좋았어요',
-        },
-    });
+  console.log(`Created musical with ID: ${musical2.musicalId}`);
 }
 
 main()
-    .then(async () => {
-        await prisma.$disconnect();
-    })
-    .catch(async (e) => {
-        console.error(e);
-        await prisma.$disconnect();
-        process.exit(1);
-    });
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

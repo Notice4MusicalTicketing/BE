@@ -6,41 +6,44 @@ export class MemberService {
     async createMember(request: CreateMemberDto): Promise<Member> {
         const member = await prisma.member.create({
             data: {
-                username: request.username,
+                email: request.email,
                 password: request.password,
                 nickname: request.nickname,
+                loginStatus: 'offline',
             },
         });
 
         return {
-            member_id: member.member_id,
-            username: member.username,
+            memberId: member.memberId,
+            email: member.email,
             password: member.password,
             nickname: member.nickname,
+            loginStatus: member.loginStatus,
         };
     }
 
-    async existMember(username: string): Promise<boolean> {
+    async existMember(email: string): Promise<boolean> {
         const member = await prisma.member.findFirst({
             where: {
-                username: username
+                email: email
             }
         });
         return member !== null;
     }
 
-    async findMemberByUsername(username: string): Promise<Member | null> {
+    async findMemberByEmail(email: string): Promise<Member | null> {
         const member = await prisma.member.findFirst({
             where: {
-                username: username
+                email: email
             }
         });
         if (member) {
             return {
-                member_id: member.member_id,
-                username: member.username,
+                memberId: member.memberId,
+                email: member.email,
                 password: member.password,
                 nickname: member.nickname,
+                loginStatus: member.loginStatus,
             };
         }
         return null;

@@ -4,6 +4,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
+    "be": "file:",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",

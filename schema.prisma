@@ -9,9 +9,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model MemberInfo {
-  memberId     String  @id
-  email        String  @unique
+model member {
+  memberId     String   @id @default(uuid())  // @default(uuid()) 추가
+  email        String   @unique
   password     String
   nickname     String
   loginStatus  String
@@ -20,24 +20,54 @@ model MemberInfo {
   posts        Post[]
 }
 
+
 model Wishlist {
   wishlistId String @id
   memberId   String
   musicalId  String
-  member     MemberInfo @relation(fields: [memberId], references: [memberId])
+  member     member @relation(fields: [memberId], references: [memberId])
   musical    Musical @relation(fields: [musicalId], references: [musicalId])
 }
 
 model Musical {
-  musicalId String @id
-  name      String
-  status    String
-  roundInfo Int    
-  startDate DateTime
-  endDate   DateTime
-  reviews   Review[]
-  wishlists Wishlist[]
-  posts     Post[]
+  musicalId        String         @id
+  name             String
+  startDate        DateTime
+  endDate          DateTime
+  status           String
+  details          MusicalDetail?
+  reviews          Review[]
+  wishlists        Wishlist[]
+  posts            Post[]
+}
+
+model MusicalDetail {
+  id               String         @id @default(uuid())
+  musicalId        String         @unique
+  facilityName     String
+  cast             String
+  runtime          Int
+  ageRating        String
+  productionCompany String
+  ticketPrice      String
+  posterImagePath  String
+  synopsis         String
+  genre            String
+  introImages      Json
+  showtimes        String
+  facilityDetails  String
+  ticketAgencies   TicketAgency[]
+
+  musical          Musical        @relation(fields: [musicalId], references: [musicalId])
+}
+
+model TicketAgency {
+  id               String         @id @default(uuid())
+  name             String
+  code             String
+  url              String
+  musicalDetailId  String
+  musicalDetail    MusicalDetail  @relation(fields: [musicalDetailId], references: [id])
 }
 
 model Review {
@@ -47,7 +77,7 @@ model Review {
   rating     Float
   title      String
   content    String
-  member     MemberInfo @relation(fields: [memberId], references: [memberId])
+  member     member @relation(fields: [memberId], references: [memberId])
   musical    Musical @relation(fields: [musicalId], references: [musicalId])
 }
 
@@ -62,6 +92,6 @@ model Post {
   likeCount   Int
   warningCount Int
   category    String
-  member      MemberInfo @relation(fields: [memberId], references: [memberId])
+  member      member @relation(fields: [memberId], references: [memberId])
   musical     Musical @relation(fields: [musicalId], references: [musicalId])
 }
