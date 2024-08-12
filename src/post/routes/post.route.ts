@@ -6,7 +6,7 @@ const postController = new PostController();
 
 /**
  * @swagger
- * /api/posts:
+ * /api/post:
  *   post:
  *     summary: 게시물 작성
  *     description: |
@@ -75,7 +75,7 @@ router.post('/', postController.createPost);
 
 /**
  * @swagger
- * /api/posts/{postId}:
+ * /api/post/{postId}:
  *   delete:
  *     summary: 게시물 삭제
  *     description: 특정 게시물을 삭제합니다.
@@ -115,9 +115,9 @@ router.delete('/:postId', postController.deletePost);
 
 /**
  * @swagger
- * /api/posts/preview:
+ * /api/post/preview:
  *   get:
- *     summary: 게시물 목록 조회
+ *     summary: 모든 게시물 미리보기 조회
  *     description: 모든 게시물의 미리보기를 조회합니다.
  *     tags: [Post]
  *     responses:
@@ -163,9 +163,9 @@ router.get('/preview', postController.getPreviewPosts);
 
 /**
  * @swagger
- * /api/posts/{postId}:
+ * /api/post/{postId}:
  *   get:
- *     summary: 게시물 조회
+ *     summary: 특정 게시물 조회
  *     description: 특정 게시물의 상세 정보를 조회합니다.
  *     tags: [Post]
  *     parameters:
@@ -228,7 +228,7 @@ router.get('/:postId', postController.getPost);
 
 /**
  * @swagger
- * /api/posts/{postId}/like:
+ * /api/post/{postId}/like:
  *   post:
  *     summary: 게시물 추천
  *     description: 특정 게시물에 추천을 추가합니다.
@@ -268,7 +268,7 @@ router.post('/:postId/like', postController.addLikeCount);
 
 /**
  * @swagger
- * /api/posts/{postId}/warning:
+ * /api/post/{postId}/warning:
  *   post:
  *     summary: 게시물 신고
  *     description: 특정 게시물을 신고합니다.
@@ -308,7 +308,7 @@ router.post('/:postId/warning', postController.addWarningCount);
 
 /**
  * @swagger
- * /api/posts/{postId}:
+ * /api/post/{postId}:
  *   patch:
  *     summary: 게시물 수정
  *     description: 특정 게시물의 내용을 수정합니다.
