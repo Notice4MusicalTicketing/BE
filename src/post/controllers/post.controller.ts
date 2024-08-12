@@ -1,6 +1,7 @@
 import {PostService} from "../services/post.service";
 import {Request, Response} from "express";
 import {CreatePostDto} from "../dtos/post.dto";
+import {Post, PostPreview} from "../entities/post.entity";
 
 const postService = new PostService();
 
@@ -53,7 +54,7 @@ export class PostController {
         const {postId} = req.params;
 
         try {
-            const post = await postService.getPostByPostId(Number(postId));
+            const post: Post = await postService.getPostByPostId(Number(postId));
             res.status(200).json({result: true, post});
         } catch (err: any) {
             console.error(err);
@@ -70,7 +71,7 @@ export class PostController {
         }
 
         try {
-            const posts = await postService.getAllPosts();
+            const posts: PostPreview[] = await postService.getAllPosts();
             res.status(200).json({result: true, posts});
         } catch (err: any) {
             console.error(err);
