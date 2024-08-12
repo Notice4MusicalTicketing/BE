@@ -12,10 +12,10 @@ export class AuthController {
         const createMemberDto: CreateMemberDto = req.body;
         try {
             await authService.register(createMemberDto);
-            res.status(201).json({message: "SUCCESS"});
+            res.status(201).json({result: true, message: "SUCCESS"});
         } catch (err: any){
             console.error(err);
-            res.status(400).json({message: err.message});
+            res.status(400).json({result: false, message: err.message});
         }
     }
 
@@ -26,13 +26,19 @@ export class AuthController {
             const accessToken = JwtProvider.generateAccessToken({
                 id: member.member_id.toString(),
                 username: member.username,
+                nickname: member.nickname,
                 type: "access"
             });
             const refreshToken = JwtProvider.generateRefreshToken({
                 id: member.member_id.toString(),
                 username: member.username,
+                nickname: member.nickname,
                 type: "refresh"
             })
+
+            await authService.updateRefreshToken(member, refreshToken);
+
+            // 멤버 다시 저장
             const token:Token = {
                 accessToken: accessToken,
                 refreshToken: refreshToken
@@ -40,9 +46,27 @@ export class AuthController {
             res.status(200).json({result: true, token});
         } catch (err: any){
             console.error(err);
-            res.status(400).json({message: err.message});
+            res.status(400).json({result: false, message: err.message});
         }
     }
 
+    async regenerateAccessToken(req: Request, res: Response){
+        const {
+            refreshToken
+        } = req.body as {
+            refreshToken: string
+        };
 
+        try {
+            const accessToken = await authService.regenerateAccessToken(refreshToken);
+            const token:Token = {
+                accessToken: accessToken,
+                refreshToken: refreshToken
+            }
+            res.status(200).json({result: true, token});
+        } catch (err: any){
+            console.error(err);
+            res.status(401).json({result: false, message: err.message});
+        }
+    }
 }

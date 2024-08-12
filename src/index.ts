@@ -1,50 +1,36 @@
 // index.ts
 
 import express from 'express';
-import session from 'express-session';
-import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './config/swagger';
 import memberRouter from './member/routes/member.route';
-import authRoute from './autnentication/routes/auth.route';
-
-import { PrismaClient } from '@prisma/client';
-
-// openAPI part
-import { fetchData } from './fetchData';
-import { fetchDetailData } from './detailFetchData';
+import authRoute from "./autnentication/routes/auth.route";
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from "./config/swagger";
 
 const app = express();
 const prisma = new PrismaClient();
 
-app.use(express.json());
+declare module 'express-serve-static-core' {
+    interface Request {
+        user?: Member;
+    }
+}
 
-app.use(session({
-    secret: 'your-secret-key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://ec2-52-78-180-65.ap-northeast-2.compute.amazonaws.com:3000'],
+    credentials: true,
 }));
+
+// 인증 미들웨어
+app.use(authMiddleware);
+app.use(express.json());
+// Swagger UI 설정
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Swagger UI 설정
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/member', memberRouter);
 app.use('/api/auth', authRoute);
-
-/**
- * @swagger
- * /:
- *   get:
- *     summary: Welcome message
- *     description: Returns a welcome message.
- *     responses:
- *       200:
- *         description: A welcome message
- */
-app.get('/', (req, res) => {
-    res.send('Welcome to typescript backend!');
-    console.log(req.session);
-});
 
 const PORT = process.env.PORT || 3000;
 

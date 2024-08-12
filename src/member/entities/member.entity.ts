@@ -1,11 +1,15 @@
-
-export class Member {
-    memberId: string;  // 추가
-    email: string;
+export interface Member{
+    member_id: number;
+    username: string;
     password: string;
     nickname: string;
-    loginStatus: string;
+    refresh_token?: string | null;
 }
 
-
-
+export interface MemberSchema{
+    member_id: bigint;
+    username: string;
+    password: string;
+    nickname: string;
+    refresh_token?: string | null;
+}

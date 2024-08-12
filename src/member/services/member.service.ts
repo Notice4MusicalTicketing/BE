@@ -1,6 +1,7 @@
 import { CreateMemberDto } from '../dtos/member.dto';
 import prisma from '../../config/database';
-import { Member } from '../entities/member.entity';
+import { Member, MemberSchema } from '../entities/member.entity';
+import {MemberConverter} from "../entities/member.converter";
 
 export class MemberService {
     async createMember(request: CreateMemberDto): Promise<Member> {
@@ -37,15 +38,12 @@ export class MemberService {
                 email: email
             }
         });
-        if (member) {
-            return {
-                memberId: member.memberId,
-                email: member.email,
-                password: member.password,
-                nickname: member.nickname,
-                loginStatus: member.loginStatus,
-            };
+
+        if (memberSchema === null){
+            throw new Error("해당 사용자가 존재하지 않음");
         }
-        return null;
+
+        const member: Member = MemberConverter.toEntity(memberSchema);
+        return member;
     }
 }

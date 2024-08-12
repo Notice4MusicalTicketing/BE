@@ -4,6 +4,8 @@ import {MemberService} from "../../member/services/member.service";
 import bcrypt from 'bcrypt';
 import {LoginRequestDto} from "../dtos/login.dto";
 import {Member} from "../../member/entities/member.entity";
+import JwtProvider from "./jwtProvider";
+import prisma from "../../config/database";
 
 const memberService = new MemberService();
 
@@ -44,8 +46,46 @@ export class AuthService {
         }
 
         // 성공시 토큰을 반환
-
         return member;
+    }
+
+    async updateRefreshToken(member: Member, refreshToken: string): Promise<void>{
+        member.refresh_token = refreshToken;
+
+        await prisma.member.update({
+            where: {member_id: member.member_id},
+            data: {refresh_token: refreshToken }
+        });
+    }
+
+    // access token 재발급
+    async regenerateAccessToken(refreshToken: string): Promise<string>{
+        const payload = JwtProvider.verifyToken(refreshToken);
+        // 토큰 형식 검사, 만료기간 검사
+        if (payload === null){
+            throw new Error("토큰이 올바르지 않음");
+        }
+
+        // db에서 해당 payload의 username을 이용해 refresh token 반환
+        const member = await memberService.findMemberByUsername(payload.username);
+        if (member === null){
+            throw new Error("토큰이 올바르지 않음");
+        }
+        const savedRefreshToken = member?.refresh_token;
+
+        // 두 refresh token이 같은지 확인
+        if (refreshToken !== savedRefreshToken){
+            throw new Error("refresh token이 올바르지 않음");
+        }
+
+        const accessToken = JwtProvider.generateAccessToken({
+            id: member.member_id.toString(),
+            username: member.username,
+            nickname: member.nickname,
+            type: "access"
+        });
+
+        return accessToken;
     }
 
     private isEmail = (email: string) : boolean => {

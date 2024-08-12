@@ -12,7 +12,26 @@ const options: swaggerJsdoc.Options = {
         servers: [
             {
                 url: 'http://localhost:3000',
-                description: 'Local server',
+                description: 'Local server'
+            },
+            {
+                url: 'http://ec2-52-78-180-65.ap-northeast-2.compute.amazonaws.com:3000',
+                description: 'Development server'
+            }
+        ],
+        components: {
+            securitySchemes: {
+                apiKeyAuth: {
+                    type: 'apiKey',
+                    in: 'header',
+                    name: 'Authorization',
+                    description: 'JWT token without Bearer prefix',
+                },
+            },
+        },
+        security: [
+            {
+                apiKeyAuth: [],
             },
         ],
     },
