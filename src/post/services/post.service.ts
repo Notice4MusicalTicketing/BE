@@ -95,6 +95,9 @@ export class PostService {
 
     // 게시글 조회 ( post_id 기반 )
     async getPostByPostId(postId: number): Promise<Post> {
+        if (isNaN(postId) || postId === null || postId === undefined) {
+            throw new Error("Invalid postId");
+        }
         const postSchema = await prisma.post.findFirst({
             where: {
                 post_id: BigInt(postId),
@@ -111,7 +114,7 @@ export class PostService {
         return post;
     }
 
-    // 전체 게시글 조회
+    // 전체 게시글 조회 (미리보기 조회)
     async getAllPosts(): Promise<PostPreview[]> {
         const postSchemas = await prisma.post.findMany({
             where: {
@@ -140,6 +143,38 @@ export class PostService {
             category: postSchema.category,
         }));
 
+        return postPreviews;
+    }
+
+    // category 별 게시글 조회 (미리보기 조회)
+    async getPostsByCategory(category: string): Promise<PostPreview[]> {
+        const postSchemas = await prisma.post.findMany({
+            where: {
+                category: category,
+                is_deleted: false,
+            },
+            select: {
+                post_id: true,
+                title: true,
+                like_count: true,
+                reply_count: true,
+                category: true,
+                member: {
+                    select: {
+                        nickname: true,
+                    }
+                }
+            }
+        });
+
+        const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
+            post_id: Number(postSchema.post_id),
+            nickname: postSchema.member.nickname,
+            title: postSchema.title,
+            like_count: postSchema.like_count,
+            reply_count: postSchema.reply_count,
+            category: postSchema.category,
+        }));
 
         return postPreviews;
     }
