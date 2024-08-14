@@ -3,6 +3,7 @@ export interface Post {
     member_id: number;
     title: string;
     content: string;
+    sample: string;
     created_at: Date;
     updated_at?: Date | null;
     is_deleted: boolean;
@@ -18,6 +19,7 @@ export interface PostSchema {
     member_id: bigint;
     title: string;
     content: string;
+    sample: string;
     created_at: Date;
     updated_at?: Date | null;
     is_deleted: boolean;
@@ -32,6 +34,7 @@ export interface PostPreview {
     post_id: number;
     nickname: string;
     title: string;
+    sample: string;
     like_count: number;
     reply_count: number;
     category: string;

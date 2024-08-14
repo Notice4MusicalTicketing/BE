@@ -4,6 +4,8 @@ import prisma from "../../config/database";
 import {Member} from "../../member/entities/member.entity";
 import {PostConverter} from "../entities/post.converter";
 
+const MAX_LENGTH = 20;
+
 export class PostService {
     // post create - 게시글 작성
     async createPost(request: CreatePostDto, member: Member): Promise<void> {
@@ -12,6 +14,7 @@ export class PostService {
                 member_id: member.member_id,
                 title: request.title,
                 content: request.content,
+                sample: this.extractSampleText(request.content),
                 category: request.category,
             },
         });
@@ -123,6 +126,7 @@ export class PostService {
             select: {
                 post_id: true,
                 title: true,
+                sample: true,
                 like_count: true,
                 reply_count: true,
                 category: true,
@@ -138,6 +142,7 @@ export class PostService {
             post_id: Number(postSchema.post_id),
             nickname: postSchema.member.nickname,
             title: postSchema.title,
+            sample: postSchema.sample,
             like_count: postSchema.like_count,
             reply_count: postSchema.reply_count,
             category: postSchema.category,
@@ -156,6 +161,7 @@ export class PostService {
             select: {
                 post_id: true,
                 title: true,
+                sample: true,
                 like_count: true,
                 reply_count: true,
                 category: true,
@@ -171,6 +177,7 @@ export class PostService {
             post_id: Number(postSchema.post_id),
             nickname: postSchema.member.nickname,
             title: postSchema.title,
+            sample: postSchema.sample,
             like_count: postSchema.like_count,
             reply_count: postSchema.reply_count,
             category: postSchema.category,
@@ -200,9 +207,24 @@ export class PostService {
             data: {
                 title: request.title,
                 content: request.content,
+                sample: this.extractSampleText(request.content),
                 category: request.category,
             },
         });
+    }
+
+    private extractSampleText(text: string): string {
+        const sentences = text.split(`\. | \n`).filter(sentence => sentence.trim().length > 0);
+
+        for (let sentence of sentences) {
+            sentence = sentence.trim();
+            if (sentence.length > MAX_LENGTH) {
+                return sentence.substring(0, MAX_LENGTH);
+            } else if (sentence.length > 0) {
+                return sentence;
+            }
+        }
+        return "";
     }
 }
 
