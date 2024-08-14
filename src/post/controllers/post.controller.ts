@@ -2,6 +2,7 @@ import {PostService} from "../services/post.service";
 import {Request, Response} from "express";
 import {CreatePostDto} from "../dtos/post.dto";
 import {Post, PostPreview} from "../entities/post.entity";
+import {category} from "../types/post.type";
 
 const postService = new PostService();
 
@@ -65,13 +66,28 @@ export class PostController {
     async getPreviewPosts(req: Request, res: Response) {
         const member = req.user;
 
+        const { category } = req.query;
+
+
         if (!member){
             res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
             return;
         }
 
         try {
-            const posts: PostPreview[] = await postService.getAllPosts();
+            let posts: PostPreview[];
+            if (category) {
+                if (!(category === "review" || category === "friend" || category === "deal")) {
+                    res.status(400).send(`카테고리 타입이 유효하지 않음`);
+                    return;
+                }
+                posts = await postService.getPostsByCategory(
+                    category as string
+                );
+            } else {
+                posts = await postService.getAllPosts();
+            }
+
             res.status(200).json({result: true, posts});
         } catch (err: any) {
             console.error(err);
