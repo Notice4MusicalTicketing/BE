@@ -1,51 +1,83 @@
-// index.ts
-
 import express from 'express';
-import memberRouter from './member/routes/member.route';
-import authRoute from "./autnentication/routes/auth.route";
+import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from "./config/swagger";
+import swaggerSpec from './config/swagger';
+import memberRouter from './member/routes/member.route';
+import authRouter from './authentication/routes/auth.route';
+import postRouter from './post/routes/post.route';
+import { authMiddleware } from './middleware/middleware';
+import { PrismaClient } from '@prisma/client';
+import { fetchData } from './dataFetch/fetchData';
+import { fetchDetailData } from './dataFetch/detailFetchData';
 
-const app = express();
+// PrismaClient 인스턴스 생성
 const prisma = new PrismaClient();
 
-declare module 'express-serve-static-core' {
-    interface Request {
-        user?: Member;
-    }
-}
+const app = express();
+const PORT = process.env.PORT || 3000;
 
+// CORS 설정
 app.use(cors({
     origin: ['http://localhost:3000', 'http://ec2-52-78-180-65.ap-northeast-2.compute.amazonaws.com:3000'],
     credentials: true,
 }));
 
+// JSON 파싱 미들웨어
+app.use(express.json());
+
+// Swagger 설정
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // 인증 미들웨어
 app.use(authMiddleware);
-app.use(express.json());
-// Swagger UI 설정
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Swagger UI 설정
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+// 라우트 설정
 app.use('/api/member', memberRouter);
-app.use('/api/auth', authRoute);
+app.use('/api/auth', authRouter);
+app.use('/api/post', postRouter);
 
-const PORT = process.env.PORT || 3000;
+// EJS 설정 (데이터 시각화를 위한 간단한 웹페이지)
+app.set('view engine', 'ejs');
+app.set('views', './src/views');
 
-app.listen(PORT, () => {
-    console.log('The application is listening on port http://localhost:' + PORT);
-
-    // openAPI
-    console.log('index open api start');
-    async function main() {
-        console.log('Fetching data...');
-        await fetchData();
-        console.log('Data fetch completed.');
+// 뮤지컬 목록 페이지 라우트
+app.get('/musicals', async (req, res) => {
+    try {
+        const musicals = await prisma.musical.findMany();
+        res.render('musicals', { musicals });
+    } catch (error) {
+        res.status(500).send('Error fetching musicals');
     }
+});
 
-    main().catch(console.error);
+// 뮤지컬 상세 페이지 라우트
+app.get('/musicals/:id', async (req, res) => {
+    const musicalId = Number(req.params.id);
+    try {
+        const musical = await prisma.musical.findUnique({
+            where: { musical_id: musicalId } 
+        });
+        if (musical) {
+            res.render('musical-detail', { musical });
+        } else {
+            res.status(404).send('Musical not found');
+        }
+    } catch (error) {
+        res.status(500).send('Error fetching musical details');
+    }
+});
+
+// 서버 구동 및 초기 데이터 fetch
+app.listen(PORT, async () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+
+    // 서버 구동 시 OpenAPI 데이터 가져오기 및 데이터베이스에 저장
+    try {
+        await fetchData(); // OpenAPI에서 데이터 가져오기
+        console.log('Data fetch completed.');
+    } catch (error) {
+        console.error('Error fetching data during server startup:', error);
+    }
 });
 
 /**

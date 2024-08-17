@@ -1,7 +1,5 @@
-// src/member/dtos/member.dto.ts
-
-export class CreateMemberDto {
-    email: string;
+export interface CreateMemberDto{
+    username: string;
     password: string;
     nickname: string;
 }

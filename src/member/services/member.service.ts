@@ -1,41 +1,34 @@
-import { CreateMemberDto } from '../dtos/member.dto';
+import {CreateMemberDto} from '../dtos/member.dto';
 import prisma from '../../config/database';
 import { Member, MemberSchema } from '../entities/member.entity';
 import {MemberConverter} from "../entities/member.converter";
 
-export class MemberService {
-    async createMember(request: CreateMemberDto): Promise<Member> {
-        const member = await prisma.member.create({
-            data: {
-                email: request.email,
-                password: request.password,
-                nickname: request.nickname,
-                loginStatus: 'offline',
-            },
+export class MemberService{
+    async createMember(request: CreateMemberDto) : Promise<Member> {
+        const memberSchema = await prisma.member.create({
+            data: request
         });
 
-        return {
-            memberId: member.memberId,
-            email: member.email,
-            password: member.password,
-            nickname: member.nickname,
-            loginStatus: member.loginStatus,
-        };
+        const member: Member = MemberConverter.toEntity(memberSchema);
+
+        console.log(`member 객체 저장`);
+
+        return member;
     }
 
-    async existMember(email: string): Promise<boolean> {
+    async existMember(username: string): Promise<boolean>{
         const member = await prisma.member.findFirst({
             where: {
-                email: email
+                username: username
             }
         });
         return member !== null;
     }
 
-    async findMemberByEmail(email: string): Promise<Member | null> {
-        const member = await prisma.member.findFirst({
+    async findMemberByUsername(username: string): Promise<Member | null>{
+        const memberSchema = await prisma.member.findFirst({
             where: {
-                email: email
+                username: username
             }
         });
 

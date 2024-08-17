@@ -3,6 +3,7 @@
 import { fetchData } from './fetchData';
 import { storeData } from './storeData';
 
+
 export async function fetchAndStoreData() {
     try {
         // OpenAPI로부터 데이터를 가져옵니다.

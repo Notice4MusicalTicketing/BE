@@ -1,22 +1,14 @@
 {
   "compilerOptions": {
-<<<<<<< HEAD
-    "target": "es2016",  /* JavaScript의 언어 버전을 설정, 호환되는 라이브러리 선언을 포함*/
-    "module": "commonjs",  /* 생성되는 모듈 코드를 지정 */
-    "outDir": "./dist",    /* 모든 출력 파일의 출력 폴더를 지정 */
-=======
-    "typeRoots": ["./node_modules/@types", "./path/to/types"],
-    /* Visit https://aka.ms/tsconfig to read more about this file */
->>>>>>> 4merge
-
-    /* 상호 운용 제약 조건 */
-    "esModuleInterop": true,  /* CommonJS 모듈을 ES 모듈처럼 사용할 수 있도록 추가 JavaScript를 출력. 이는 타입 호환성을 위해 'allowSyntheticDefaultImports'를 활성화합니다. */
-    "forceConsistentCasingInFileNames": true,  /* 임포트할 때 대소문자가 일관되게 유지되도록 강제합니다. */
-    "strict": true,  /* 모든 엄격한 타입-체킹 옵션을 활성화합니다. */
-    "skipLibCheck": true  /* 모든 .d.ts 파일에 대한 타입 검사를 건너뜁니다. */
-    
-  
+    "target": "es2016",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "typeRoots": ["./node_modules/@types", "./src/types"],  // 새로운 타입 경로를 추가
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
   },
-  "include": ["src", "src/fetchData.ts"],  /* src 폴더를 TypeScript 컴파일 대상에 포함 */
-  "exclude": ["node_modules"]  /* node_modules 폴더를 컴파일 대상에서 제외*/
+  "include": ["src", "src/dataFetch/fetchData.ts"],
+  "exclude": ["node_modules"]
 }
