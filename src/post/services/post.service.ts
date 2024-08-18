@@ -1,8 +1,10 @@
 import {CreatePostDto} from "../dtos/post.dto";
-import {Post, PostPreview} from "../entities/post.entity";
+import {HotPost, Post, PostPreview} from "../entities/post.entity";
 import prisma from "../../config/database";
 import {Member} from "../../member/entities/member.entity";
-import {PostConverter} from "../entities/post.converter";
+import {HotPostConverter, PostConverter} from "../entities/post.converter";
+
+const MAX_LENGTH = 20;
 
 export class PostService {
     // post create - 게시글 작성
@@ -12,6 +14,7 @@ export class PostService {
                 member_id: member.member_id,
                 title: request.title,
                 content: request.content,
+                sample: this.extractSampleText(request.content),
                 category: request.category,
             },
         });
@@ -123,6 +126,7 @@ export class PostService {
             select: {
                 post_id: true,
                 title: true,
+                sample: true,
                 like_count: true,
                 reply_count: true,
                 category: true,
@@ -138,6 +142,7 @@ export class PostService {
             post_id: Number(postSchema.post_id),
             nickname: postSchema.member.nickname,
             title: postSchema.title,
+            sample: postSchema.sample,
             like_count: postSchema.like_count,
             reply_count: postSchema.reply_count,
             category: postSchema.category,
@@ -156,6 +161,7 @@ export class PostService {
             select: {
                 post_id: true,
                 title: true,
+                sample: true,
                 like_count: true,
                 reply_count: true,
                 category: true,
@@ -171,6 +177,7 @@ export class PostService {
             post_id: Number(postSchema.post_id),
             nickname: postSchema.member.nickname,
             title: postSchema.title,
+            sample: postSchema.sample,
             like_count: postSchema.like_count,
             reply_count: postSchema.reply_count,
             category: postSchema.category,
@@ -200,9 +207,107 @@ export class PostService {
             data: {
                 title: request.title,
                 content: request.content,
+                sample: this.extractSampleText(request.content),
                 category: request.category,
             },
         });
+    }
+
+    async getHotPost(): Promise<HotPost> {
+        const maxLikeCount = await prisma.post.aggregate({
+            _max: {
+                like_count: true,
+            },
+            where: {
+                is_deleted: false,
+            }
+        });
+
+        if (maxLikeCount._max.like_count === null || maxLikeCount._max.like_count === undefined) {
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        console.log(maxLikeCount._max.like_count);
+
+        const posts = await prisma.post.findMany({
+            where: {
+                is_deleted: false,
+                like_count: maxLikeCount._max.like_count,
+            },
+            orderBy: {
+                post_id: 'desc',
+            },
+            take: 1,
+        });
+
+        console.log(posts[0]);
+
+        if (posts.length === 0 || posts[0] === undefined) {
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        const hotPost = HotPostConverter.toEntity(posts[0]);
+
+        return hotPost;
+    }
+
+    private extractSampleText(text: string): string {
+        const sentences = text.split(`\. | \n`).filter(sentence => sentence.trim().length > 0);
+
+        for (let sentence of sentences) {
+            sentence = sentence.trim();
+            if (sentence.length > MAX_LENGTH) {
+                return sentence.substring(0, MAX_LENGTH);
+            } else if (sentence.length > 0) {
+                return sentence;
+            }
+        }
+        return "";
+    }
+
+    async searchPosts(criteria: string): Promise<PostPreview[]> {
+        const postSchemas = await prisma.post.findMany({
+            where: {
+                is_deleted: false,
+                OR: [
+                    {
+                        content: {
+                            contains: criteria,
+                        },
+                    },
+                    {
+                        title: {
+                            contains: criteria,
+                        },
+                    },
+                ],
+            },
+            select: {
+                post_id: true,
+                title: true,
+                sample: true,
+                like_count: true,
+                reply_count: true,
+                category: true,
+                member: {
+                    select: {
+                        nickname: true,
+                    }
+                }
+            },
+        });
+
+        const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
+            post_id: Number(postSchema.post_id),
+            nickname: postSchema.member.nickname,
+            title: postSchema.title,
+            sample: postSchema.sample,
+            like_count: postSchema.like_count,
+            reply_count: postSchema.reply_count,
+            category: postSchema.category,
+        }));
+
+        return postPreviews;
     }
 }
 

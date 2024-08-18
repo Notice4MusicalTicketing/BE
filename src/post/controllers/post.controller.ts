@@ -66,7 +66,7 @@ export class PostController {
     async getPreviewPosts(req: Request, res: Response) {
         const member = req.user;
 
-        const { category } = req.query;
+        const { category, criteria } = req.query;
 
 
         if (!member){
@@ -84,6 +84,8 @@ export class PostController {
                 posts = await postService.getPostsByCategory(
                     category as string
                 );
+            } else if (criteria) {
+                posts = await postService.searchPosts(String(criteria));
             } else {
                 posts = await postService.getAllPosts();
             }
@@ -147,6 +149,23 @@ export class PostController {
         try {
             const updatePost = await postService.updatePost(Number(postId), updatePostDto, member);
             res.status(200).json({result: true, message: "게시글 수정 성공"});
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message});
+        }
+    }
+
+    async getHotPost(req: Request, res: Response) {
+        const member = req.user;
+
+        if (!member){
+            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
+            return;
+        }
+
+        try {
+            const hotPost = await postService.getHotPost();
+            res.status(200).json({result: true, hotPost});
         } catch (err: any) {
             console.error(err);
             res.status(400).json({result: false, message: err.message});

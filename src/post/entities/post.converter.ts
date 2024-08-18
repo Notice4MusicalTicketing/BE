@@ -1,4 +1,4 @@
-import {Post, PostSchema} from "./post.entity"
+import {HotPost, Post, PostSchema} from "./post.entity"
 
 export const PostConverter = {
 
@@ -9,6 +9,7 @@ export const PostConverter = {
             member_id: Number(postSchema.member_id),
             title: postSchema.title,
             content: postSchema.content,
+            sample: postSchema.sample,
             created_at: postSchema.created_at,
             updated_at: postSchema.updated_at,
             is_deleted: postSchema.is_deleted,
@@ -27,6 +28,7 @@ export const PostConverter = {
             member_id: BigInt(post.member_id),
             title: post.title,
             content: post.content,
+            sample: post.sample,
             created_at: post.created_at,
             updated_at: post.updated_at,
             is_deleted: post.is_deleted,
@@ -38,3 +40,12 @@ export const PostConverter = {
         };
     }
 };
+
+export const HotPostConverter = {
+    toEntity(postSchema: PostSchema): HotPost {
+        return {
+            post_id: Number(postSchema.post_id),
+            title: postSchema.title,
+        };
+    }
+}
