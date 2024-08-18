@@ -264,5 +264,50 @@ export class PostService {
         }
         return "";
     }
+
+    async searchPosts(criteria: string): Promise<PostPreview[]> {
+        const postSchemas = await prisma.post.findMany({
+            where: {
+                is_deleted: false,
+                OR: [
+                    {
+                        content: {
+                            contains: criteria,
+                        },
+                    },
+                    {
+                        title: {
+                            contains: criteria,
+                        },
+                    },
+                ],
+            },
+            select: {
+                post_id: true,
+                title: true,
+                sample: true,
+                like_count: true,
+                reply_count: true,
+                category: true,
+                member: {
+                    select: {
+                        nickname: true,
+                    }
+                }
+            },
+        });
+
+        const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
+            post_id: Number(postSchema.post_id),
+            nickname: postSchema.member.nickname,
+            title: postSchema.title,
+            sample: postSchema.sample,
+            like_count: postSchema.like_count,
+            reply_count: postSchema.reply_count,
+            category: postSchema.category,
+        }));
+
+        return postPreviews;
+    }
 }
 

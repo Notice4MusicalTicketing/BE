@@ -113,6 +113,7 @@ router.post('/', postController.createPost);
  */
 router.delete('/:postId', postController.deletePost);
 
+// TODO 쿼리 파라미터 문서에 추가 해야 함
 /**
  * @swagger
  * /api/post/preview:
@@ -361,6 +362,4 @@ router.post('/:postId/warning', postController.addWarningCount);
  *                   type: string
  */
 router.patch('/:postId', postController.updatePost);
-
-
 export default router;

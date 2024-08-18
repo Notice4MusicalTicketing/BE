@@ -66,7 +66,7 @@ export class PostController {
     async getPreviewPosts(req: Request, res: Response) {
         const member = req.user;
 
-        const { category } = req.query;
+        const { category, criteria } = req.query;
 
 
         if (!member){
@@ -84,6 +84,8 @@ export class PostController {
                 posts = await postService.getPostsByCategory(
                     category as string
                 );
+            } else if (criteria) {
+                posts = await postService.searchPosts(String(criteria));
             } else {
                 posts = await postService.getAllPosts();
             }
