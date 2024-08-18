@@ -1,8 +1,8 @@
 import {CreatePostDto} from "../dtos/post.dto";
-import {Post, PostPreview} from "../entities/post.entity";
+import {HotPost, Post, PostPreview} from "../entities/post.entity";
 import prisma from "../../config/database";
 import {Member} from "../../member/entities/member.entity";
-import {PostConverter} from "../entities/post.converter";
+import {HotPostConverter, PostConverter} from "../entities/post.converter";
 
 const MAX_LENGTH = 20;
 
@@ -211,6 +211,44 @@ export class PostService {
                 category: request.category,
             },
         });
+    }
+
+    async getHotPost(): Promise<HotPost> {
+        const maxLikeCount = await prisma.post.aggregate({
+            _max: {
+                like_count: true,
+            },
+            where: {
+                is_deleted: false,
+            }
+        });
+
+        if (maxLikeCount._max.like_count === null || maxLikeCount._max.like_count === undefined) {
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        console.log(maxLikeCount._max.like_count);
+
+        const posts = await prisma.post.findMany({
+            where: {
+                is_deleted: false,
+                like_count: maxLikeCount._max.like_count,
+            },
+            orderBy: {
+                post_id: 'desc',
+            },
+            take: 1,
+        });
+
+        console.log(posts[0]);
+
+        if (posts.length === 0 || posts[0] === undefined) {
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        const hotPost = HotPostConverter.toEntity(posts[0]);
+
+        return hotPost;
     }
 
     private extractSampleText(text: string): string {

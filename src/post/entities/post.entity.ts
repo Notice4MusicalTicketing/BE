@@ -39,3 +39,8 @@ export interface PostPreview {
     reply_count: number;
     category: string;
 }
+
+export interface HotPost {
+    post_id: number;
+    title: string;
+}

@@ -161,6 +161,8 @@ router.delete('/:postId', postController.deletePost);
  */
 router.get('/preview', postController.getPreviewPosts);
 
+router.get('/hot', postController.getHotPost);
+
 /**
  * @swagger
  * /api/post/{postId}:
@@ -359,5 +361,6 @@ router.post('/:postId/warning', postController.addWarningCount);
  *                   type: string
  */
 router.patch('/:postId', postController.updatePost);
+
 
 export default router;

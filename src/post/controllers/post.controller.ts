@@ -152,4 +152,21 @@ export class PostController {
             res.status(400).json({result: false, message: err.message});
         }
     }
+
+    async getHotPost(req: Request, res: Response) {
+        const member = req.user;
+
+        if (!member){
+            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
+            return;
+        }
+
+        try {
+            const hotPost = await postService.getHotPost();
+            res.status(200).json({result: true, hotPost});
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message});
+        }
+    }
 }
