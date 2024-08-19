@@ -12,10 +12,10 @@ export class CommentService {
     async createComment(request: CreateCommentDto, member: Member){
         const commentSchema = await prisma.comment.create({
             data: {
-                post_id: request.postId,
+                postId: request.postId,
                 content: request.content,
-                member_id: member.member_id,
-                parent_id: request.parentId,
+                memberId: member.memberId,
+                parentId: request.parentId,
             },
         });
     }

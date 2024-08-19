@@ -50,10 +50,10 @@ export class AuthService {
     }
 
     async updateRefreshToken(member: Member, refreshToken: string): Promise<void>{
-        member.refresh_token = refreshToken;
+        member.refreshToken = refreshToken;
 
         await prisma.member.update({
-            where: {member_id: member.member_id},
+            where: {memberId: member.memberId},
             data: {refresh_token: refreshToken }
         });
     }
@@ -71,7 +71,7 @@ export class AuthService {
         if (member === null){
             throw new Error("토큰이 올바르지 않음");
         }
-        const savedRefreshToken = member?.refresh_token;
+        const savedRefreshToken = member?.refreshToken;
 
         // 두 refresh token이 같은지 확인
         if (refreshToken !== savedRefreshToken){
@@ -79,7 +79,7 @@ export class AuthService {
         }
 
         const accessToken = JwtProvider.generateAccessToken({
-            id: member.member_id.toString(),
+            id: member.memberId.toString(),
             username: member.username,
             nickname: member.nickname,
             type: "access"

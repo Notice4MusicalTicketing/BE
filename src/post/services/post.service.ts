@@ -11,7 +11,7 @@ export class PostService {
     async createPost(request: CreatePostDto, member: Member): Promise<void> {
         const postSchema = await prisma.post.create({
             data: {
-                member_id: member.member_id,
+                memberId: member.memberId,
                 title: request.title,
                 content: request.content,
                 sample: this.extractSampleText(request.content),
@@ -25,8 +25,8 @@ export class PostService {
     async addLikeCount(postId: number): Promise<void> {
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                is_deleted: false,
+                postId: BigInt(postId),
+                isDeleted: false,
             }
         });
 
@@ -36,10 +36,10 @@ export class PostService {
 
         await prisma.post.update({
             where: {
-                post_id: BigInt(postId),
+                postId: BigInt(postId),
             },
             data: {
-                like_count: {
+                likeCount: {
                     increment: 1,
                 }
             },
@@ -51,8 +51,8 @@ export class PostService {
     async addWarningCount(postId: number): Promise<void> {
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                is_deleted: false,
+                postId: BigInt(postId),
+                isDeleted: false,
             }
         });
 
@@ -62,10 +62,10 @@ export class PostService {
 
         await prisma.post.update({
             where: {
-                post_id: BigInt(postId),
+                postId: BigInt(postId),
             },
             data: {
-                warning_count: {
+                warningCount: {
                     increment: 1,
                 }
             },
@@ -76,9 +76,9 @@ export class PostService {
     async deletePost(postId: number, memberId: number): Promise<void> {
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                member_id: BigInt(memberId),
-                is_deleted: false,
+                postId: BigInt(postId),
+                memberId: BigInt(memberId),
+                isDeleted: false,
             }
         });
 
@@ -88,10 +88,10 @@ export class PostService {
 
         await prisma.post.update({
             where: {
-                post_id: BigInt(postId),
+                postId: BigInt(postId),
             },
             data: {
-                is_deleted: true,
+                isDeleted: true,
             },
         });
     }
@@ -103,8 +103,8 @@ export class PostService {
         }
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                is_deleted: false,
+                postId: BigInt(postId),
+                isDeleted: false,
             }
         });
 
@@ -121,14 +121,14 @@ export class PostService {
     async getAllPosts(): Promise<PostPreview[]> {
         const postSchemas = await prisma.post.findMany({
             where: {
-                is_deleted: false,
+                isDeleted: false,
             },
             select: {
-                post_id: true,
+                postId: true,
                 title: true,
                 sample: true,
-                like_count: true,
-                reply_count: true,
+                likeCount: true,
+                replyCount: true,
                 category: true,
                 member: {
                     select: {
@@ -139,12 +139,12 @@ export class PostService {
         });
 
         const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
-            post_id: Number(postSchema.post_id),
+            postId: Number(postSchema.postId),
             nickname: postSchema.member.nickname,
             title: postSchema.title,
             sample: postSchema.sample,
-            like_count: postSchema.like_count,
-            reply_count: postSchema.reply_count,
+            likeCount: postSchema.likeCount,
+            replyCount: postSchema.replyCount,
             category: postSchema.category,
         }));
 
@@ -156,14 +156,14 @@ export class PostService {
         const postSchemas = await prisma.post.findMany({
             where: {
                 category: category,
-                is_deleted: false,
+                isDeleted: false,
             },
             select: {
-                post_id: true,
+                postId: true,
                 title: true,
                 sample: true,
-                like_count: true,
-                reply_count: true,
+                likeCount: true,
+                replyCount: true,
                 category: true,
                 member: {
                     select: {
@@ -174,12 +174,12 @@ export class PostService {
         });
 
         const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
-            post_id: Number(postSchema.post_id),
+            postId: Number(postSchema.postId),
             nickname: postSchema.member.nickname,
             title: postSchema.title,
             sample: postSchema.sample,
-            like_count: postSchema.like_count,
-            reply_count: postSchema.reply_count,
+            likeCount: postSchema.likeCount,
+            replyCount: postSchema.replyCount,
             category: postSchema.category,
         }));
 
@@ -189,9 +189,9 @@ export class PostService {
     async updatePost(postId: number, request: CreatePostDto, member: Member): Promise<void> {
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                member_id: BigInt(member.member_id),
-                is_deleted: false,
+                postId: BigInt(postId),
+                memberId: BigInt(member.memberId),
+                isDeleted: false,
             }
         });
 
@@ -201,8 +201,8 @@ export class PostService {
 
         await prisma.post.update({
             where: {
-                post_id: BigInt(postId),
-                member_id: BigInt(member.member_id),
+                postId: BigInt(postId),
+                memberId: BigInt(member.memberId),
             },
             data: {
                 title: request.title,
@@ -216,26 +216,26 @@ export class PostService {
     async getHotPost(): Promise<HotPost> {
         const maxLikeCount = await prisma.post.aggregate({
             _max: {
-                like_count: true,
+                likeCount: true,
             },
             where: {
-                is_deleted: false,
+                isDeleted: false,
             }
         });
 
-        if (maxLikeCount._max.like_count === null || maxLikeCount._max.like_count === undefined) {
+        if (maxLikeCount._max.likeCount === null || maxLikeCount._max.likeCount === undefined) {
             throw new Error("게시물이 존재하지 않음");
         }
 
-        console.log(maxLikeCount._max.like_count);
+        console.log(maxLikeCount._max.likeCount);
 
         const posts = await prisma.post.findMany({
             where: {
-                is_deleted: false,
-                like_count: maxLikeCount._max.like_count,
+                isDeleted: false,
+                likeCount: maxLikeCount._max.likeCount,
             },
             orderBy: {
-                post_id: 'desc',
+                postId: 'desc',
             },
             take: 1,
         });
@@ -268,7 +268,7 @@ export class PostService {
     async searchPosts(criteria: string): Promise<PostPreview[]> {
         const postSchemas = await prisma.post.findMany({
             where: {
-                is_deleted: false,
+                isDeleted: false,
                 OR: [
                     {
                         content: {
@@ -283,11 +283,11 @@ export class PostService {
                 ],
             },
             select: {
-                post_id: true,
+                postId: true,
                 title: true,
                 sample: true,
-                like_count: true,
-                reply_count: true,
+                likeCount: true,
+                replyCount: true,
                 category: true,
                 member: {
                     select: {
@@ -298,12 +298,12 @@ export class PostService {
         });
 
         const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
-            post_id: Number(postSchema.post_id),
+            postId: Number(postSchema.postId),
             nickname: postSchema.member.nickname,
             title: postSchema.title,
             sample: postSchema.sample,
-            like_count: postSchema.like_count,
-            reply_count: postSchema.reply_count,
+            likeCount: postSchema.likeCount,
+            replyCount: postSchema.replyCount,
             category: postSchema.category,
         }));
 

@@ -1,15 +1,15 @@
 export interface Member{
-    member_id: number;
+    memberId: number;
     username: string;
     password: string;
     nickname: string;
-    refresh_token?: string | null;
+    refreshToken?: string | null;
 }
 
 export interface MemberSchema{
-    member_id: bigint;
+    memberId: bigint;
     username: string;
     password: string;
     nickname: string;
-    refresh_token?: string | null;
+    refreshToken?: string | null;
 }

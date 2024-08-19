@@ -12,7 +12,7 @@ model Member {
     username  String @db.VarChar(32) @unique
     password  String @db.VarChar(255)
     nickname String @db.VarChar(8)
-    refresh_token String? @db.VarChar(255)
+    refreshToken String? @db.VarChar(255)
 
     posts Post[]
     comments Comment[]
