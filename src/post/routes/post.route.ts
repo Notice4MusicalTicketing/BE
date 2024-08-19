@@ -118,9 +118,21 @@ router.delete('/:postId', postController.deletePost);
  * @swagger
  * /api/post/preview:
  *   get:
- *     summary: 모든 게시물 미리보기 조회
- *     description: 모든 게시물의 미리보기를 조회합니다.
+ *     summary: 모든 게시물 미리보기 조회 및 게시물 검색
+ *     description: 모든 게시물의 미리보기 및 카테고리 별 게시물 조회와 게시물 검색 기능을 합니다.
  *     tags: [Post]
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *           enum: ["review", "friend", "deal"]
+ *         description: 카테고리 필터
+ *       - in: query
+ *         name: criteria
+ *         schema:
+ *           type: string
+ *         description: 검색 기준
  *     responses:
  *       200:
  *         description: 게시물 목록 조회 성공
@@ -136,15 +148,15 @@ router.delete('/:postId', postController.deletePost);
  *                   items:
  *                     type: object
  *                     properties:
- *                       post_id:
+ *                       postId:
  *                         type: integer
  *                       nickname:
  *                         type: string
  *                       title:
  *                         type: string
- *                       like_count:
+ *                       likeCount:
  *                         type: integer
- *                       reply_count:
+ *                       replyCount:
  *                         type: integer
  *                       category:
  *                         type: string
@@ -162,6 +174,46 @@ router.delete('/:postId', postController.deletePost);
  */
 router.get('/preview', postController.getPreviewPosts);
 
+/**
+ * @swagger
+ * /api/post/hot:
+ *   get:
+ *     summary: 인기 게시물 조회
+ *     description: 현재 가장 인기 있는 게시물을 조회합니다.
+ *     tags: [Post]
+ *     responses:
+ *       200:
+ *         description: 인기 게시물 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: boolean
+ *                 hotPost:
+ *                   type: object
+ *                   properties:
+ *                     postId:
+ *                       type: integer
+ *                     title:
+ *                       type: string
+ *                     likeCount:
+ *                       type: integer
+ *                     replyCount:
+ *                       type: integer
+ *       400:
+ *         description: 유효하지 않은 요청 또는 인증되지 않은 사용자
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ */
 router.get('/hot', postController.getHotPost);
 
 /**
@@ -191,25 +243,25 @@ router.get('/hot', postController.getHotPost);
  *                 post:
  *                   type: object
  *                   properties:
- *                     post_id:
+ *                     postId:
  *                       type: integer
- *                     member_id:
+ *                     memberId:
  *                       type: integer
  *                     title:
  *                       type: string
  *                     content:
  *                       type: string
- *                     created_at:
+ *                     createdAt:
  *                       type: string
  *                       format: date-time
- *                     updated_at:
+ *                     updatedAt:
  *                       type: string
  *                       format: date-time
- *                     like_count:
+ *                     likeCount:
  *                       type: integer
- *                     warning_count:
+ *                     warningCount:
  *                       type: integer
- *                     reply_count:
+ *                     replyCount:
  *                       type: integer
  *                     views:
  *                       type: integer
