@@ -1,4 +1,5 @@
 export interface CreateCommentDto {
     content: string;
-    parent_id: number | null;
+    parentId?: number;
+    postId: number;
 }

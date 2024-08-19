@@ -96,7 +96,7 @@ export class PostService {
         });
     }
 
-    // 게시글 조회 ( post_id 기반 )
+    // 게시글 조회 ( postId 기반 )
     async getPostByPostId(postId: number): Promise<Post> {
         if (isNaN(postId) || postId === null || postId === undefined) {
             throw new Error("Invalid postId");

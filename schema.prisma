@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Member {
-    member_id BigInt @id @default(autoincrement())
+    memberId BigInt @id @default(autoincrement())
     username  String @db.VarChar(32) @unique
     password  String @db.VarChar(255)
     nickname String @db.VarChar(8)
@@ -21,17 +21,17 @@ model Member {
 }
 
 model Post {
-    post_id BigInt @id @default(autoincrement())
-    member_id BigInt
+    postId BigInt @id @default(autoincrement())
+    memberId BigInt
     title String
     content String
     sample String @db.VarChar(20)
-    created_at DateTime @default(now())
-    updated_at DateTime? @updatedAt
-    is_deleted Boolean @default(false)
-    like_count Int @default(0)
-    warning_count Int @default(0)
-    reply_count Int @default(0)
+    createdAt DateTime @default(now())
+    updatedAt DateTime? @updatedAt
+    isDeleted Boolean @default(false)
+    likeCount Int @default(0)
+    warningCount Int @default(0)
+    replyCount Int @default(0)
     views Int @default(0)
     category String
 
@@ -43,22 +43,23 @@ model Post {
 }
 
 model Comment {
-    comment_id BigInt @id @default(autoincrement())
-    post_id BigInt
-    content String
-    created_at DateTime @default(now())
-    updated_at DateTime? @updatedAt
-    is_deleted Boolean @default(false)
-    like_count Int @default(0)
-    warning_count Int @default(0)
-    reply_count Int @default(0)
+    commentId BigInt @id @default(autoincrement())
 
-    posts Post[]
+    content String
+    createdAt DateTime @default(now())
+    updatedAt DateTime? @updatedAt
+    isDeleted Boolean @default(false)
+    likeCount Int @default(0)
+    warningCount Int @default(0)
+    replyCount Int @default(0)
+
+    post Post @relation(fields: [post_id], references: [post_id])
+    postId BigInt
 
     member Member @relation(fields: [member_id], references: [member_id])
-    member_id BigInt
+    memberId BigInt
 
-    parent_id BigInt?
+    parentId BigInt?
     parent Comment? @relation("CommentToComment", fields: [parent_id], references: [comment_id])
     replies Comment[] @relation("CommentToComment")
 

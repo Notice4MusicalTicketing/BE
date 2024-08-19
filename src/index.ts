@@ -7,6 +7,7 @@ import swaggerSpec from "./config/swagger";
 import {authMiddleware} from "./middleware/middleware";
 import {Member} from "./member/entities/member.entity";
 import postRoute from "./post/routes/post.route";
+import commentRoute from "./comment/routes/comment.route";
 // import yaml from 'js-yaml';
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/member', memberRouter);
 app.use('/api/auth', authRoute);
 app.use('/api/post', postRoute);
+app.use('/api/comment', commentRoute);
 
 // app.get('/api-docs/swagger.yaml', (req, res) => {
 //     const yamlDoc = yaml.dump(swaggerSpec);
