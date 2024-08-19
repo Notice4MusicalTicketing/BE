@@ -1,46 +1,46 @@
 export interface Post {
-    post_id: number;
-    member_id: number;
+    postId: number;
+    memberId: number;
     title: string;
     content: string;
     sample: string;
-    created_at: Date;
-    updated_at?: Date | null;
-    is_deleted: boolean;
-    like_count: number;
-    warning_count: number;
-    reply_count: number;
+    createdAt: Date;
+    updatedAt?: Date | null;
+    isDeleted: boolean;
+    likeCount: number;
+    warningCount: number;
+    replyCount: number;
     views: number;
     category: string;
 }
 
 export interface PostSchema {
-    post_id: bigint;
-    member_id: bigint;
+    postId: bigint;
+    memberId: bigint;
     title: string;
     content: string;
     sample: string;
-    created_at: Date;
-    updated_at?: Date | null;
-    is_deleted: boolean;
-    like_count: number;
-    warning_count: number;
-    reply_count: number;
+    createdAt: Date;
+    updatedAt?: Date | null;
+    isDeleted: boolean;
+    likeCount: number;
+    warningCount: number;
+    replyCount: number;
     views: number;
     category: string;
 }
 
 export interface PostPreview {
-    post_id: number;
+    postId: number;
     nickname: string;
     title: string;
     sample: string;
-    like_count: number;
-    reply_count: number;
+    likeCount: number;
+    replyCount: number;
     category: string;
 }
 
 export interface HotPost {
-    post_id: number;
+    postId: number;
     title: string;
 }

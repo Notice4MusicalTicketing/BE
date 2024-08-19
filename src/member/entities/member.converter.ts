@@ -5,22 +5,22 @@ export const MemberConverter = {
     // MemberSchema를 Member 엔티티로 변환
     toEntity(memberSchema: MemberSchema): Member {
         return {
-            member_id: Number(memberSchema.member_id),
+            memberId: Number(memberSchema.memberId),
             username: memberSchema.username,
             password: memberSchema.password,
             nickname: memberSchema.nickname,
-            refresh_token: memberSchema.refresh_token,
+            refreshToken: memberSchema.refreshToken,
         };
     },
 
     // Member 엔티티를 MemberSchema로 변환
     toSchema(member: Member): MemberSchema {
         return {
-            member_id: BigInt(member.member_id),
+            memberId: BigInt(member.memberId),
             username: member.username,
             password: member.password,
             nickname: member.nickname,
-            refresh_token: member.refresh_token,
+            refreshToken: member.refreshToken,
         };
     }
 };
