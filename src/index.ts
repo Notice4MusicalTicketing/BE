@@ -9,6 +9,7 @@ import { authMiddleware } from './middleware/middleware';
 import { PrismaClient } from '@prisma/client';
 import { fetchData } from './dataFetch/fetchData';
 import { fetchDetailData } from './dataFetch/detailFetchData';
+import { fetchAndStoreData } from './dataFetch/fetchAndStoreData';
 
 // PrismaClient 인스턴스 생성
 const prisma = new PrismaClient();
@@ -71,12 +72,32 @@ app.get('/musicals/:id', async (req, res) => {
 app.listen(PORT, async () => {
     console.log(`Server running on http://localhost:${PORT}`);
 
-    // 서버 구동 시 OpenAPI 데이터 가져오기 및 데이터베이스에 저장
     try {
-        await fetchData(); // OpenAPI에서 데이터 가져오기
-        console.log('Data fetch completed.');
+        const startDate = '20240101'; // 원하는 시작 날짜
+        const endDate = '20240131'; // 원하는 종료 날짜
+        const genre = '뮤지컬'; // 원하는 장르
+        const region = '서울'; // 원하는 지역
+        const status = '공연중'; // 원하는 공연 상태
+
+        await fetchAndStoreData(startDate, endDate, genre, region, status); // 인수 제공
+        console.log('Data fetch completed_index.ts');
     } catch (error) {
         console.error('Error fetching data during server startup:', error);
+    }
+});
+
+app.post('/api/sync', async (req, res) => {
+    try {
+        const startDate = '20240101'; // 원하는 시작 날짜
+        const endDate = '20240131'; // 원하는 종료 날짜
+        const genre = '뮤지컬'; // 원하는 장르
+        const region = '서울'; // 원하는 지역
+        const status = '공연중'; // 원하는 공연 상태
+
+        await fetchAndStoreData(startDate, endDate, genre, region, status); // 인수를 제공
+        res.status(200).json({ message: 'Data synchronization completed.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error during data synchronization.', error });
     }
 });
 
@@ -98,6 +119,7 @@ app.listen(PORT, async () => {
  *       500:
  *         description: Error fetching detail data
  */
+
 app.get('/api/performance/:mt20id', async (req, res) => {
     const { mt20id } = req.params;
     try {
