@@ -68,4 +68,68 @@ export class CommentService {
             },
         });
     }
+
+    async addLikeCount(commentId: number, postId: number) {
+        const commentSchema = await prisma.comment.findFirst({
+            where: {
+                commentId: BigInt(commentId),
+                postId: BigInt(postId),
+                isDeleted: false,
+                post: {
+                    isDeleted: false,
+                }
+            },
+            include: {
+                post: true,
+            }
+        });
+
+        if (commentSchema === null) {
+            throw new Error("게시물 또는 댓글이 존재하지 않음");
+        }
+
+        await prisma.comment.update({
+            where: {
+                commentId: BigInt(commentId),
+                postId: BigInt(postId),
+            },
+            data: {
+                likeCount: {
+                    increment: 1,
+                }
+            },
+        });
+    }
+
+    async addWarningCount(commentId: number, postId: number) {
+        const commentSchema = await prisma.comment.findFirst({
+            where: {
+                commentId: BigInt(commentId),
+                postId: BigInt(postId),
+                isDeleted: false,
+                post: {
+                    isDeleted: false,
+                }
+            },
+            include: {
+                post: true,
+            }
+        });
+
+        if (commentSchema === null) {
+            throw new Error("게시물 또는 댓글이 존재하지 않음");
+        }
+
+        await prisma.comment.update({
+            where: {
+                commentId: BigInt(commentId),
+                postId: BigInt(postId),
+            },
+            data: {
+                warningCount: {
+                    increment: 1,
+                }
+            },
+        });
+    }
 }
