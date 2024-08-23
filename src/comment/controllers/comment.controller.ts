@@ -34,10 +34,29 @@ export class CommentController {
 
         try {
             const comments = await commentService.getCommentsByPostId(Number(postId));
-            res.status(200).json({result: true, message: "댓글 작성 완료"});
+            res.status(200).json({result: true, comments});
         } catch (err: any) {
             console.error(err);
             res.status(500).json({result: false, message: "댓글 작성에 실패함"});
+        }
+    }
+
+    async deleteComment(req: Request, res: Response) {
+        const member = req.user;
+        const {postId} = req.params;
+        const {commentId} = req.params;
+
+        if (!member){
+            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
+            return;
+        }
+
+        try {
+            const deletedComment = await commentService.deleteComment(Number(commentId), Number(postId), member.memberId);
+            res.status(200).json({result: true, message: "댓글이 삭제됨"});
+        } catch (err: any) {
+            console.error(err);
+            res.status(500).json({result: false, message: "댓글 삭제에 실패함"});
         }
     }
 }

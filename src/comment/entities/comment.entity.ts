@@ -3,7 +3,7 @@ export interface Comment {
     postId: number;
     memberId: number;
 
-    comment: string;
+    content: string;
     isDeleted: boolean;
     likeCount: number;
     warningCount: number;
@@ -16,17 +16,18 @@ export interface Comment {
 }
 
 export interface CommentSchema {
-    comment_id: bigint;
-    post_id: bigint;
-    member_id: bigint;
+    commentId: bigint;
+    postId: bigint;
+    memberId: bigint;
 
-    comment: string;
-    is_deleted: boolean;
-    like_count: number;
-    warning_count: number;
-    reply_count: number;
-    parent_id?: bigint | null;
+    content: string;
+    isDeleted: boolean;
+    likeCount: number;
+    warningCount: number;
+    replyCount: number;
+    parentId?: bigint | null;
+    replies?: CommentSchema[];
 
-    created_at: Date;
-    updated_at?: Date;
+    createdAt: Date;
+    updatedAt?: Date | null;
 }
