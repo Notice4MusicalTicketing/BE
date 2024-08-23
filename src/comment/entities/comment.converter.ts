@@ -4,20 +4,22 @@ import {Comment, CommentSchema} from "./comment.entity";
 export const CommentConverter = {
     toEntity(commentSchema: CommentSchema): Comment {
         return {
-            commentId: Number(commentSchema.comment_id),
-            postId: Number(commentSchema.post_id),
-            memberId: Number(commentSchema.member_id),
+            commentId: Number(commentSchema.commentId),
+            postId: Number(commentSchema.postId),
+            memberId: Number(commentSchema.memberId),
 
-            comment: commentSchema.comment,
-            isDeleted: commentSchema.is_deleted,
-            likeCount: commentSchema.like_count,
-            warningCount: commentSchema.warning_count,
-            replyCount: commentSchema.reply_count,
-            parentId: Number(commentSchema.parent_id) || null,
+            content: commentSchema.content,
+            isDeleted: commentSchema.isDeleted,
+            likeCount: commentSchema.likeCount,
+            warningCount: commentSchema.warningCount,
+            replyCount: commentSchema.replyCount,
+            parentId: commentSchema.parentId !== undefined ? Number(commentSchema.parentId) : null,
 
-            createdAt: commentSchema.created_at,
-            updatedAt: commentSchema.updated_at || undefined,
+            createdAt: commentSchema.createdAt,
+            updatedAt: commentSchema.updatedAt || undefined,
+
+
+            replies: commentSchema.replies ? commentSchema.replies.map(reply => this.toEntity(reply)) : [],
         };
     },
-
 };
