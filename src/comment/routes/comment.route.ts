@@ -6,8 +6,8 @@ const commentController = new CommentController();
 
 router.post('/', commentController.createComment);
 router.get('/post/:postId', commentController.fetchCommentsByPostId);
-router.delete('/:postId/:commentId', commentController.deleteComment);
-router.post('/:postId/:commentId/like', commentController.addLikeCount);
-router.post('/:postId/:commentId/warning', commentController.addWarningCount);
+router.delete('/:commentId/post/:postId', commentController.deleteComment);
+router.post('/:commentId/post/:postId/like', commentController.addLikeCount);
+router.post('/:commentId/post/:postId/warning', commentController.addWarningCount);
 
 export default router;
