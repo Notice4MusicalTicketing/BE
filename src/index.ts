@@ -1,15 +1,21 @@
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
+
 import swaggerSpec from './config/swagger';
 import memberRouter from './member/routes/member.route';
-import authRouter from './authentication/routes/auth.route';
-import postRouter from './post/routes/post.route';
+
 import { authMiddleware } from './middleware/middleware';
 import { PrismaClient } from '@prisma/client';
 import { fetchData } from './dataFetch/fetchData';
 import { fetchDetailData } from './dataFetch/detailFetchData';
 import { fetchAndStoreData } from './dataFetch/fetchAndStoreData';
+
+import {Member} from "./member/entities/member.entity";
+import postRoute from "./post/routes/post.route";
+import commentRoute from "./comment/routes/comment.route";
+import swaggerDocument from "./config/openapi.docs";
+
 
 // PrismaClient 인스턴스 생성
 const prisma = new PrismaClient();
@@ -26,20 +32,27 @@ app.use(cors({
 // JSON 파싱 미들웨어
 app.use(express.json());
 
-// Swagger 설정
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
 // 인증 미들웨어
 app.use(authMiddleware);
 
+// Swagger UI 설정
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
 // 라우트 설정
 app.use('/api/member', memberRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/post', postRouter);
+
+app.use('/api/auth', authRoute);
+app.use('/api/post', postRoute);
+app.use('/api/comment', commentRoute);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 // EJS 설정 (데이터 시각화를 위한 간단한 웹페이지)
 app.set('view engine', 'ejs');
 app.set('views', './src/views');
+
 
 // 뮤지컬 목록 페이지 라우트
 app.get('/musicals', async (req, res) => {
@@ -129,3 +142,12 @@ app.get('/api/performance/:mt20id', async (req, res) => {
         res.status(500).send('Error fetching detail data');
     }
 });
+
+app.listen(PORT, () => {
+    if (process.env.NODE_ENV !== 'production') {
+        console.log(`Server is running on : http://localhost:${PORT}`);
+        console.log(`Server is running on : http://localhost:${PORT}/api-docs`);
+        console.log(`Swagger YAML is available at: http://localhost:${PORT}/api-docs/swagger.yaml`);
+    }
+});
+

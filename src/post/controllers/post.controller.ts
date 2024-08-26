@@ -1,7 +1,9 @@
-import { PostService } from "../services/post.service";
-import { Request, Response } from "express";
-import { CreatePostDto } from "../dtos/post.dto";
-import { Post, PostPreview } from "../entities/post.entity";
+
+import {PostService} from "../services/post.service";
+import {Request, Response} from "express";
+import {CreatePostDto} from "../dtos/post.dto";
+import {Post, PostPreview} from "../entities/post.entity";
+import {category} from "../types/post.type";
 
 const postService = new PostService();
 
@@ -34,12 +36,15 @@ export class PostController {
 
     const { postId } = req.params;
 
-    try {
-      const deletedPost = await postService.deletePost(Number(postId), member.memberId);
-      res.status(200).json({ result: true, message: "게시물 삭제에 성공함" });
-    } catch (err: any) {
-      console.error(err);
-      res.status(400).json({ result: false, message: err.message });
+
+        try {
+            const deletedPost = await postService.deletePost(Number(postId), member.memberId);
+            res.status(200).json({result: true, message: "게시물 삭제에 성공함"});
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message});
+        }
+
     }
   }
 
@@ -53,12 +58,13 @@ export class PostController {
 
     const { postId } = req.params;
 
-    try {
-      const post: Post = await postService.getPostByPostId(Number(postId));
-      res.status(200).json({ result: true, post });
-    } catch (err: any) {
-      console.error(err);
-      res.status(400).json({ result: false, message: err.message });
+        try {
+            const post: Post = await postService.getPostByPostId(Number(postId));
+            res.status(200).json({result: true, post});
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message});
+        }
     }
   }
 
@@ -66,17 +72,35 @@ export class PostController {
     const member = req.user;
     const { category } = req.query;
 
-    if (!member) {
-      res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });
-      return;
-    }
 
-    try {
-      let posts: PostPreview[];
-      if (category) {
-        if (!(category === "review" || category === "friend" || category === "deal")) {
-          res.status(400).send(`카테고리 타입이 유효하지 않음`);
-          return;
+        const { category, criteria } = req.query;
+
+
+        if (!member){
+            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
+            return;
+        }
+
+        try {
+            let posts: PostPreview[];
+            if (category) {
+                if (!(category === "review" || category === "friend" || category === "deal")) {
+                    res.status(400).send(`카테고리 타입이 유효하지 않음`);
+                    return;
+                }
+                posts = await postService.getPostsByCategory(
+                    category as string
+                );
+            } else if (criteria) {
+                posts = await postService.searchPosts(String(criteria));
+            } else {
+                posts = await postService.getAllPosts();
+            }
+
+            res.status(200).json({result: true, posts});
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message});
         }
         posts = await postService.getPostsByCategory(category as string);
       } else {
@@ -146,5 +170,23 @@ export class PostController {
       console.error(err);
       res.status(400).json({ result: false, message: err.message });
     }
-  }
+
+
+    async getHotPost(req: Request, res: Response) {
+        const member = req.user;
+
+        if (!member){
+            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
+            return;
+        }
+
+        try {
+            const hotPost = await postService.getHotPost();
+            res.status(200).json({result: true, hotPost});
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message});
+        }
+    }
 }
+
