@@ -4,6 +4,7 @@ import prisma from "../../config/database";
 import {Member} from "../../member/entities/member.entity";
 import {HotPostConverter, PostConverter} from "../entities/post.converter";
 
+
 const MAX_LENGTH = 20;
 
 export class PostService {
@@ -213,6 +214,7 @@ export class PostService {
         });
     }
 
+
     async getHotPost(): Promise<HotPost> {
         const maxLikeCount = await prisma.post.aggregate({
             _max: {
@@ -311,3 +313,100 @@ export class PostService {
     }
 }
 
+    async getHotPost(): Promise<HotPost> {
+        const maxLikeCount = await prisma.post.aggregate({
+            _max: {
+                likeCount: true,
+            },
+            where: {
+                isDeleted: false,
+            }
+        });
+
+        if (maxLikeCount._max.likeCount === null || maxLikeCount._max.likeCount === undefined) {
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        console.log(maxLikeCount._max.likeCount);
+
+        const posts = await prisma.post.findMany({
+            where: {
+                isDeleted: false,
+                likeCount: maxLikeCount._max.likeCount,
+            },
+            orderBy: {
+                postId: 'desc',
+            },
+            take: 1,
+        });
+
+        console.log(posts[0]);
+
+        if (posts.length === 0 || posts[0] === undefined) {
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        const hotPost = HotPostConverter.toEntity(posts[0]);
+
+        return hotPost;
+    }
+
+    private extractSampleText(text: string): string {
+        const sentences = text.split(`\. | \n`).filter(sentence => sentence.trim().length > 0);
+
+        for (let sentence of sentences) {
+            sentence = sentence.trim();
+            if (sentence.length > MAX_LENGTH) {
+                return sentence.substring(0, MAX_LENGTH);
+            } else if (sentence.length > 0) {
+                return sentence;
+            }
+        }
+        return "";
+    }
+
+    async searchPosts(criteria: string): Promise<PostPreview[]> {
+        const postSchemas = await prisma.post.findMany({
+            where: {
+                isDeleted: false,
+                OR: [
+                    {
+                        content: {
+                            contains: criteria,
+                        },
+                    },
+                    {
+                        title: {
+                            contains: criteria,
+                        },
+                    },
+                ],
+            },
+            select: {
+                postId: true,
+                title: true,
+                sample: true,
+                likeCount: true,
+                replyCount: true,
+                category: true,
+                member: {
+                    select: {
+                        nickname: true,
+                    }
+                }
+            },
+        });
+
+        const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
+            postId: Number(postSchema.postId),
+            nickname: postSchema.member.nickname,
+            title: postSchema.title,
+            sample: postSchema.sample,
+            likeCount: postSchema.likeCount,
+            replyCount: postSchema.replyCount,
+            category: postSchema.category,
+        }));
+
+        return postPreviews;
+    }
+}

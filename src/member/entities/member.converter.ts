@@ -1,4 +1,4 @@
-import {Member, MemberSchema} from "./member.entity"
+import { Member, MemberSchema } from "./member.entity"
 
 export const MemberConverter = {
 

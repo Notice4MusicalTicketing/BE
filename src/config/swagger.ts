@@ -1,3 +1,4 @@
+// swagger.ts
 import swaggerJsdoc from 'swagger-jsdoc';
 
 const options: swaggerJsdoc.Options = {
@@ -6,7 +7,7 @@ const options: swaggerJsdoc.Options = {
         info: {
             title: 'Notice4MusicalTicketing',
             version: '1.0.0',
-            description: '야호 ^_^',
+            description: 'API documentation for Notice4MusicalTicketing',
         },
         servers: [
             {
@@ -38,7 +39,8 @@ const options: swaggerJsdoc.Options = {
         './src/**/routes/*.ts',
         './src/**/controllers/*.ts',
         './src/**/dtos/*.ts',
-        './src/**/entities/*.ts'
+        './src/**/entities/*.ts',
+        './src/index.ts'  // Swagger 주석이 포함된 파일 경로
     ],
 };
 

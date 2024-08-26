@@ -1,3 +1,4 @@
+
 import {PostService} from "../services/post.service";
 import {Request, Response} from "express";
 import {CreatePostDto} from "../dtos/post.dto";
@@ -7,33 +8,34 @@ import {category} from "../types/post.type";
 const postService = new PostService();
 
 export class PostController {
-    async createPost(req: Request, res: Response) {
-        const createPostDto: CreatePostDto = req.body;
-        const member = req.user;
+  async createPost(req: Request, res: Response) {
+    const createPostDto: CreatePostDto = req.body;
+    const member = req.user;
 
-        if (!member){
-            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
-            return;
-        }
-
-        try {
-            const newPost = await postService.createPost(createPostDto, member);
-            res.status(201).json({result: true, message: "SUCCESS"});
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({result: false, error: "게시물 작성에 실패함"});
-        }
+    if (!member) {
+      res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });
+      return;
     }
 
-    async deletePost(req: Request, res: Response) {
-        const member = req.user;
+    try {
+      const newPost = await postService.createPost(createPostDto, member);
+      res.status(201).json({ result: true, message: "SUCCESS" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ result: false, error: "게시물 작성에 실패함" });
+    }
+  }
 
-        if (!member){
-            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
-            return;
-        }
+  async deletePost(req: Request, res: Response) {
+    const member = req.user;
 
-        const {postId} = req.params;
+    if (!member) {
+      res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });
+      return;
+    }
+
+    const { postId } = req.params;
+
 
         try {
             const deletedPost = await postService.deletePost(Number(postId), member.memberId);
@@ -42,17 +44,19 @@ export class PostController {
             console.error(err);
             res.status(400).json({result: false, message: err.message});
         }
+
+    }
+  }
+
+  async getPost(req: Request, res: Response) {
+    const member = req.user;
+
+    if (!member) {
+      res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });
+      return;
     }
 
-    async getPost(req: Request, res: Response) {
-        const member = req.user;
-
-        if (!member){
-            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
-            return;
-        }
-
-        const {postId} = req.params;
+    const { postId } = req.params;
 
         try {
             const post: Post = await postService.getPostByPostId(Number(postId));
@@ -62,9 +66,12 @@ export class PostController {
             res.status(400).json({result: false, message: err.message});
         }
     }
+  }
 
-    async getPreviewPosts(req: Request, res: Response) {
-        const member = req.user;
+  async getPreviewPosts(req: Request, res: Response) {
+    const member = req.user;
+    const { category } = req.query;
+
 
         const { category, criteria } = req.query;
 
@@ -95,65 +102,75 @@ export class PostController {
             console.error(err);
             res.status(400).json({result: false, message: err.message});
         }
+        posts = await postService.getPostsByCategory(category as string);
+      } else {
+        posts = await postService.getAllPosts();
+      }
+
+      res.status(200).json({ result: true, posts });
+    } catch (err: any) {
+      console.error(err);
+      res.status(400).json({ result: false, message: err.message });
+    }
+  }
+
+  async addLikeCount(req: Request, res: Response) {
+    const member = req.user;
+
+    if (!member) {
+      res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });
+      return;
     }
 
-    async addLikeCount(req: Request, res: Response) {
-        const member = req.user;
+    const { postId } = req.params;
 
-        if (!member){
-            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
-            return;
-        }
+    try {
+      const addLike = await postService.addLikeCount(Number(postId));
+      res.status(201).json({ result: true, message: "게시글 추천하기 성공" });
+    } catch (err: any) {
+      console.error(err);
+      res.status(400).json({ result: false, message: err.message });
+    }
+  }
 
-        const {postId} = req.params;
+  async addWarningCount(req: Request, res: Response) {
+    const member = req.user;
 
-        try {
-            const addLike = await postService.addLikeCount(Number(postId));
-            res.status(201).json({result: true, message: "게시글 추천하기 성공"});
-        } catch (err: any) {
-            console.error(err);
-            res.status(400).json({result: false, message: err.message});
-        }
+    if (!member) {
+      res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });
+      return;
     }
 
-    async addWarningCount(req: Request, res: Response) {
-        const member = req.user;
+    const { postId } = req.params;
 
-        if (!member){
-            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
-            return;
-        }
+    try {
+      const addWarning = await postService.addWarningCount(Number(postId));
+      res.status(201).json({ result: true, message: "게시글 신고하기 성공" });
+    } catch (err: any) {
+      console.error(err);
+      res.status(400).json({ result: false, message: err.message });
+    }
+  }
 
-        const {postId} = req.params;
+  async updatePost(req: Request, res: Response) {
+    const updatePostDto: CreatePostDto = req.body;
+    const member = req.user;
 
-        try {
-            const addWarning = await postService.addWarningCount(Number(postId));
-            res.status(201).json({result: true, message: "게시글 신고하기 성공"});
-        } catch (err: any) {
-            console.error(err);
-            res.status(400).json({result: false, message: err.message});
-        }
+    if (!member) {
+      res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });
+      return;
     }
 
-    async updatePost(req: Request, res: Response) {
-        const updatePostDto: CreatePostDto = req.body;
-        const member = req.user;
+    const { postId } = req.params;
 
-        if (!member){
-            res.status(400).json({result: false, message: `로그인 중이 아닙니다.`});
-            return;
-        }
-
-        const {postId} = req.params;
-
-        try {
-            const updatePost = await postService.updatePost(Number(postId), updatePostDto, member);
-            res.status(200).json({result: true, message: "게시글 수정 성공"});
-        } catch (err: any) {
-            console.error(err);
-            res.status(400).json({result: false, message: err.message});
-        }
+    try {
+      const updatePost = await postService.updatePost(Number(postId), updatePostDto, member);
+      res.status(200).json({ result: true, message: "게시글 수정 성공" });
+    } catch (err: any) {
+      console.error(err);
+      res.status(400).json({ result: false, message: err.message });
     }
+
 
     async getHotPost(req: Request, res: Response) {
         const member = req.user;
@@ -172,3 +189,4 @@ export class PostController {
         }
     }
 }
+
