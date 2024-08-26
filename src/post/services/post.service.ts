@@ -1,17 +1,20 @@
-import {CreatePostDto} from "../dtos/post.dto";
-import {Post, PostPreview} from "../entities/post.entity";
+import { CreatePostDto } from "../dtos/post.dto";
+import { Post, PostPreview } from "../entities/post.entity";
 import prisma from "../../config/database";
-import {Member} from "../../member/entities/member.entity";
-import {PostConverter} from "../entities/post.converter";
+import { Member } from "../../member/entities/member.entity";
+import { PostConverter } from "../entities/post.converter";
+
+const MAX_LENGTH = 20;
 
 export class PostService {
     // post create - 게시글 작성
     async createPost(request: CreatePostDto, member: Member): Promise<void> {
         const postSchema = await prisma.post.create({
             data: {
-                member_id: member.member_id,
+                memberId: member.memberId,
                 title: request.title,
                 content: request.content,
+                sample: this.extractSampleText(request.content),
                 category: request.category,
             },
         });
@@ -22,8 +25,8 @@ export class PostService {
     async addLikeCount(postId: number): Promise<void> {
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                is_deleted: false,
+                postId: BigInt(postId),
+                isDeleted: false,
             }
         });
 
@@ -33,10 +36,10 @@ export class PostService {
 
         await prisma.post.update({
             where: {
-                post_id: BigInt(postId),
+                postId: BigInt(postId),
             },
             data: {
-                like_count: {
+                likeCount: {
                     increment: 1,
                 }
             },
@@ -48,8 +51,8 @@ export class PostService {
     async addWarningCount(postId: number): Promise<void> {
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                is_deleted: false,
+                postId: BigInt(postId),
+                isDeleted: false,
             }
         });
 
@@ -59,10 +62,10 @@ export class PostService {
 
         await prisma.post.update({
             where: {
-                post_id: BigInt(postId),
+                postId: BigInt(postId),
             },
             data: {
-                warning_count: {
+                warningCount: {
                     increment: 1,
                 }
             },
@@ -73,9 +76,9 @@ export class PostService {
     async deletePost(postId: number, memberId: number): Promise<void> {
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                member_id: BigInt(memberId),
-                is_deleted: false,
+                postId: BigInt(postId),
+                memberId: BigInt(memberId),
+                isDeleted: false,
             }
         });
 
@@ -85,23 +88,23 @@ export class PostService {
 
         await prisma.post.update({
             where: {
-                post_id: BigInt(postId),
+                postId: BigInt(postId),
             },
             data: {
-                is_deleted: true,
+                isDeleted: true,
             },
         });
     }
 
-    // 게시글 조회 ( post_id 기반 )
+    // 게시글 조회 ( postId 기반 )
     async getPostByPostId(postId: number): Promise<Post> {
         if (isNaN(postId) || postId === null || postId === undefined) {
             throw new Error("Invalid postId");
         }
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                is_deleted: false,
+                postId: BigInt(postId),
+                isDeleted: false,
             }
         });
 
@@ -118,13 +121,14 @@ export class PostService {
     async getAllPosts(): Promise<PostPreview[]> {
         const postSchemas = await prisma.post.findMany({
             where: {
-                is_deleted: false,
+                isDeleted: false,
             },
             select: {
-                post_id: true,
+                postId: true,
                 title: true,
-                like_count: true,
-                reply_count: true,
+                sample: true,
+                likeCount: true,
+                replyCount: true,
                 category: true,
                 member: {
                     select: {
@@ -135,11 +139,12 @@ export class PostService {
         });
 
         const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
-            post_id: Number(postSchema.post_id),
+            postId: Number(postSchema.postId),
             nickname: postSchema.member.nickname,
             title: postSchema.title,
-            like_count: postSchema.like_count,
-            reply_count: postSchema.reply_count,
+            sample: postSchema.sample,
+            likeCount: postSchema.likeCount,
+            replyCount: postSchema.replyCount,
             category: postSchema.category,
         }));
 
@@ -151,13 +156,14 @@ export class PostService {
         const postSchemas = await prisma.post.findMany({
             where: {
                 category: category,
-                is_deleted: false,
+                isDeleted: false,
             },
             select: {
-                post_id: true,
+                postId: true,
                 title: true,
-                like_count: true,
-                reply_count: true,
+                sample: true,
+                likeCount: true,
+                replyCount: true,
                 category: true,
                 member: {
                     select: {
@@ -168,11 +174,12 @@ export class PostService {
         });
 
         const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
-            post_id: Number(postSchema.post_id),
+            postId: Number(postSchema.postId),
             nickname: postSchema.member.nickname,
             title: postSchema.title,
-            like_count: postSchema.like_count,
-            reply_count: postSchema.reply_count,
+            sample: postSchema.sample,
+            likeCount: postSchema.likeCount,
+            replyCount: postSchema.replyCount,
             category: postSchema.category,
         }));
 
@@ -182,9 +189,9 @@ export class PostService {
     async updatePost(postId: number, request: CreatePostDto, member: Member): Promise<void> {
         const postSchema = await prisma.post.findFirst({
             where: {
-                post_id: BigInt(postId),
-                member_id: BigInt(member.member_id),
-                is_deleted: false,
+                postId: BigInt(postId),
+                memberId: BigInt(member.memberId),
+                isDeleted: false,
             }
         });
 
@@ -194,14 +201,112 @@ export class PostService {
 
         await prisma.post.update({
             where: {
-                post_id: BigInt(postId),
-                member_id: BigInt(member.member_id),
+                postId: BigInt(postId),
+                memberId: BigInt(member.memberId),
             },
             data: {
                 title: request.title,
                 content: request.content,
+                sample: this.extractSampleText(request.content),
                 category: request.category,
             },
         });
+    }
+
+    async getHotPost(): Promise<HotPost> {
+        const maxLikeCount = await prisma.post.aggregate({
+            _max: {
+                likeCount: true,
+            },
+            where: {
+                isDeleted: false,
+            }
+        });
+
+        if (maxLikeCount._max.likeCount === null || maxLikeCount._max.likeCount === undefined) {
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        console.log(maxLikeCount._max.likeCount);
+
+        const posts = await prisma.post.findMany({
+            where: {
+                isDeleted: false,
+                likeCount: maxLikeCount._max.likeCount,
+            },
+            orderBy: {
+                postId: 'desc',
+            },
+            take: 1,
+        });
+
+        console.log(posts[0]);
+
+        if (posts.length === 0 || posts[0] === undefined) {
+            throw new Error("게시물이 존재하지 않음");
+        }
+
+        const hotPost = HotPostConverter.toEntity(posts[0]);
+
+        return hotPost;
+    }
+
+    private extractSampleText(text: string): string {
+        const sentences = text.split(`\. | \n`).filter(sentence => sentence.trim().length > 0);
+
+        for (let sentence of sentences) {
+            sentence = sentence.trim();
+            if (sentence.length > MAX_LENGTH) {
+                return sentence.substring(0, MAX_LENGTH);
+            } else if (sentence.length > 0) {
+                return sentence;
+            }
+        }
+        return "";
+    }
+
+    async searchPosts(criteria: string): Promise<PostPreview[]> {
+        const postSchemas = await prisma.post.findMany({
+            where: {
+                isDeleted: false,
+                OR: [
+                    {
+                        content: {
+                            contains: criteria,
+                        },
+                    },
+                    {
+                        title: {
+                            contains: criteria,
+                        },
+                    },
+                ],
+            },
+            select: {
+                postId: true,
+                title: true,
+                sample: true,
+                likeCount: true,
+                replyCount: true,
+                category: true,
+                member: {
+                    select: {
+                        nickname: true,
+                    }
+                }
+            },
+        });
+
+        const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
+            postId: Number(postSchema.postId),
+            nickname: postSchema.member.nickname,
+            title: postSchema.title,
+            sample: postSchema.sample,
+            likeCount: postSchema.likeCount,
+            replyCount: postSchema.replyCount,
+            category: postSchema.category,
+        }));
+
+        return postPreviews;
     }
 }

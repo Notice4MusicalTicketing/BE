@@ -40,49 +40,49 @@ export async function storeData(xmlData: string): Promise<void> {
 
             // 데이터베이스에 저장
             await prisma.musical.upsert({
-                where: { musical_id: mt20id },
+                where: { musicalId: mt20id },
                 update: {
                     name: prfnm,
-                    start_date: prfpdfrom,
-                    end_date: prfpdto,
+                    startDate: prfpdfrom,
+                    endDate: prfpdto,
                     status: prfstate,
                     details: {
                         update: {
-                            facility_name: fcltynm,
-                            poster_image_path: poster,
+                            facilityName: fcltynm,
+                            posterImagePath: poster,
                             genre: genrenm,
                             cast: cast,
                             runtime: runtime,
-                            age_rating: age_rating,
-                            production_company: production_company,
-                            ticket_price: ticket_price,
+                            ageRating: age_rating,
+                            productionCompany: production_company,
+                            ticketPrice: ticket_price,
                             synopsis: synopsis,
-                            intro_images: intro_images,
+                            introImages: intro_images,
                             showtimes: showtimes,
-                            facility_details: facility_details
+                            facilityDetails: facility_details
                         }
                     }
                 },
                 create: {
-                    musical_id: mt20id,
+                    musicalId: mt20id,
                     name: prfnm,
-                    start_date: prfpdfrom,
-                    end_date: prfpdto,
+                    startDate: prfpdfrom,
+                    endDate: prfpdto,
                     status: prfstate,
                     details: {
                         create: {
-                            facility_name: fcltynm,
-                            poster_image_path: poster,
+                            facilityName: fcltynm,
+                            posterImagePath: poster,
                             genre: genrenm,
                             cast: cast,
                             runtime: runtime,
-                            age_rating: age_rating,
-                            production_company: production_company,
-                            ticket_price: ticket_price,
+                            ageRating: age_rating,
+                            productionCompany: production_company,
+                            ticketPrice: ticket_price,
                             synopsis: synopsis,
-                            intro_images: intro_images,
+                            introImages: intro_images,
                             showtimes: showtimes,
-                            facility_details: facility_details
+                            facilityDetails: facility_details
                         }
                     }
                 }

@@ -56,7 +56,7 @@ app.get('/musicals/:id', async (req, res) => {
     const musicalId = Number(req.params.id);
     try {
         const musical = await prisma.musical.findUnique({
-            where: { musical_id: musicalId } 
+            where: { musicalId: musicalId } 
         });
         if (musical) {
             res.render('musical-detail', { musical });

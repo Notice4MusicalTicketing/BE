@@ -1,138 +1,166 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-}
-
-model Member {
-  password      String     @db.VarChar(255)
-  nickname      String     @db.VarChar(8)
-  member_id     BigInt     @id @default(autoincrement())
-  refresh_token String?    @db.VarChar(255)
-  username      String     @unique @db.VarChar(32)
-  posts         Post[]
-  replies       Reply[]
-  reviews       Review[]
-  wishlists     Wishlist[]
-
-  @@map("member")
-}
-
-model Post {
-  title         String
-  content       String
-  category      String
-  created_at    DateTime  @default(now())
-  is_deleted    Boolean   @default(false)
-  like_count    Int       @default(0)
-  member_id     BigInt
-  musical_id    BigInt?
-  post_id       BigInt    @id @default(autoincrement())
-  reply_count   Int       @default(0)
-  updated_at    DateTime? @updatedAt
-  views         Int       @default(0)
-  warning_count Int       @default(0)
-  member        Member    @relation(fields: [member_id], references: [member_id])
-  musical       Musical?  @relation(fields: [musical_id], references: [musical_id])
-  replies       Reply[]
-
-  @@index([member_id], map: "post_member_id_fkey")
-  @@index([musical_id], map: "post_musical_id_fkey")
-  @@map("post")
-}
-
-model Reply {
-  comment_id BigInt    @id @default(autoincrement())
-  reply_id   BigInt?
-  post_id    BigInt
-  member_id  BigInt
-  content    String
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  is_deleted Boolean   @default(false)
-  member     Member    @relation(fields: [member_id], references: [member_id])
-  post       Post      @relation(fields: [post_id], references: [post_id])
-
-  @@index([member_id], map: "reply_member_id_fkey")
-  @@index([post_id], map: "reply_post_id_fkey")
-  @@map("reply")
-}
-
-model Review {
-  rating     Int
-  title      String
-  content    String
-  created_at DateTime @default(now())
-  member_id  BigInt
-  musical_id BigInt
-  review_id  BigInt   @id @default(autoincrement())
-  member     Member   @relation(fields: [member_id], references: [member_id])
-  musical    Musical  @relation(fields: [musical_id], references: [musical_id])
-
-  @@index([member_id], map: "review_member_id_fkey")
-  @@index([musical_id], map: "review_musical_id_fkey")
-  @@map("review")
-}
-
-model Wishlist {
-  member_id   BigInt
-  musical_id  BigInt
-  wishlist_id BigInt  @id @default(autoincrement())
-  member      Member  @relation(fields: [member_id], references: [member_id])
-  musical     Musical @relation(fields: [musical_id], references: [musical_id])
-
-  @@index([member_id], map: "wishlist_member_id_fkey")
-  @@index([musical_id], map: "wishlist_musical_id_fkey")
-  @@map("wishlist")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
 model Musical {
-  name           String
-  status         String
-  average_rating Float          @default(0)
-  end_date       DateTime
-  musical_id     BigInt         @id @default(autoincrement())
-  start_date     DateTime
-  details        MusicalDetail?
-  posts          Post[]
-  reviews        Review[]
-  wishlists      Wishlist[]
+    name           String
+    status         String
+    averageRating  Float          @default(0)
+    endDate        DateTime       @default(now()) // 기본값 추가
+    musicalId      BigInt         @id @default(autoincrement())
+    startDate      DateTime       @default(now()) // 기본값 추가
+    details        MusicalDetail?
+    posts          Post[]
+    reviews        Review[]
+    wishlists      Wishlist[]
 
-  @@map("musical")
+    @@map("musical")
 }
 
 model MusicalDetail {
-  id                 BigInt         @id @default(autoincrement())
-  musical_id         BigInt         @unique
-  facility_name      String
-  cast               String
-  runtime            Int
-  age_rating         String
-  production_company String
-  ticket_price       String
-  poster_image_path  String
-  synopsis           String
-  genre              String
-  intro_images       Json
-  showtimes          String
-  facility_details   String
-  musical            Musical        @relation(fields: [musical_id], references: [musical_id])
-  ticket_agencies    TicketAgency[]
+    id                 BigInt         @id @default(autoincrement())
+    musicalId          BigInt         @unique
+    facilityName       String         @default("") // 기본값 추가
+    cast               String         @default("") // 기본값 추가
+    runtime            Int            @default(0) // 기본값 추가
+    ageRating          String         @default("") // 기본값 추가
+    productionCompany  String         @default("") // 기본값 추가
+    ticketPrice        String         @default("") // 기본값 추가
+    posterImagePath    String         @default("") // 기본값 추가
+    synopsis           String         @default("") // 기본값 추가
+    genre              String         @default("") // 기본값 추가
+    introImages        Json           @default("{}") // 기본값 추가
+    showtimes          String         @default("") // 기본값 추가
+    facilityDetails    String         @default("") // 기본값 추가
+    musical            Musical        @relation(fields: [musicalId], references: [musicalId])
+    ticketAgencies     TicketAgency[]
 
-  @@map("musical_detail")
+    @@map("musical_detail")
 }
 
 model TicketAgency {
-  id                BigInt        @id @default(autoincrement())
-  name              String
-  code              String
-  url               String
-  musical_detail_id BigInt
-  musical_detail    MusicalDetail @relation(fields: [musical_detail_id], references: [id])
+    id                BigInt        @id @default(autoincrement())
+    name              String
+    code              String
+    url               String
+    musicalDetailId   BigInt
+    musicalDetail     MusicalDetail @relation(fields: [musicalDetailId], references: [id])
 
-  @@index([musical_detail_id], map: "ticket_agency_musical_detail_id_fkey")
-  @@map("ticket_agency")
+    @@index([musicalDetailId], map: "ticket_agency_musical_detail_id_fkey")
+    @@map("ticket_agency")
+}
+
+
+model Member {
+    memberId      BigInt     @id @default(autoincrement()) // 기존 member_id -> memberId
+    username      String     @unique
+    password      String
+    nickname      String
+    refreshToken  String?   
+
+    posts         Post[]
+    comments      Comment[]
+    replies       Reply[]
+    reviews       Review[]
+    wishlists     Wishlist[]
+
+    @@map("member")
+}
+model Post {
+    postId BigInt @id @default(autoincrement())
+    memberId BigInt
+    title String
+    content String
+    sample String
+    createdAt DateTime @default(now())
+    updatedAt DateTime? @updatedAt
+    isDeleted Boolean @default(false)
+    likeCount Int @default(0)
+    warningCount Int @default(0)
+    replyCount Int @default(0)
+    views Int @default(0)
+    category String
+
+    comments Comment[]
+    replies Reply[]
+    musicalId BigInt? // Add this line
+    musical Musical? @relation(fields: [musicalId], references: [musicalId]) // Corrected reference
+
+    member Member @relation(fields: [memberId], references: [memberId])
+
+    @@map("post")
+}
+
+model Comment {
+    commentId BigInt @id @default(autoincrement())
+
+    content String
+    createdAt DateTime @default(now())
+    updatedAt DateTime? @updatedAt
+    isDeleted Boolean @default(false)
+    likeCount Int @default(0)
+    warningCount Int @default(0)
+    replyCount Int @default(0)
+
+    post Post @relation(fields: [postId], references: [postId])
+    postId BigInt
+
+    member Member @relation(fields: [memberId], references: [memberId])
+    memberId BigInt
+
+    parentId BigInt?
+    parent Comment? @relation("CommentToComment", fields: [parentId], references: [commentId])
+    replies Comment[] @relation("CommentToComment")
+
+    @@map("comment")
+}
+
+model Reply {
+    commentId BigInt    @id @default(autoincrement())
+    replyId   BigInt?
+    postId    BigInt
+    memberId  BigInt // 기존 member_id -> memberId
+    content   String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+    isDeleted Boolean   @default(false)
+    member    Member    @relation(fields: [memberId], references: [memberId])
+    post      Post      @relation(fields: [postId], references: [postId])
+
+    @@index([memberId], map: "reply_member_id_fkey")
+    @@index([postId], map: "reply_post_id_fkey")
+    @@map("reply")
+}
+
+model Review {
+    rating     Int
+    title      String
+    content    String
+    createdAt  DateTime @default(now())
+    memberId   BigInt // 기존 member_id -> memberId
+    musicalId  BigInt
+    reviewId   BigInt   @id @default(autoincrement())
+    member     Member   @relation(fields: [memberId], references: [memberId])
+    musical    Musical  @relation(fields: [musicalId], references: [musicalId])
+
+    @@index([memberId], map: "review_member_id_fkey")
+    @@index([musicalId], map: "review_musical_id_fkey")
+    @@map("review")
+}
+
+model Wishlist {
+    memberId   BigInt // 기존 member_id -> memberId
+    musicalId  BigInt
+    wishlistId BigInt  @id @default(autoincrement())
+    member     Member  @relation(fields: [memberId], references: [memberId])
+    musical    Musical @relation(fields: [musicalId], references: [musicalId])
+
+    @@index([memberId], map: "wishlist_member_id_fkey")
+    @@index([musicalId], map: "wishlist_musical_id_fkey")
+    @@map("wishlist")
 }
