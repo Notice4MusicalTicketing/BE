@@ -11,12 +11,11 @@
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.11.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "validator": "^13.12.0",
 
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
     "yamljs": "^0.3.0"
 
   },
