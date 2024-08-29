@@ -69,7 +69,6 @@ model Member {
     reviews       Review[]
     wishlists     Wishlist[]
 
-
     @@map("member")
 }
 model Post {
@@ -78,7 +77,6 @@ model Post {
     title String
     content String
     sample String
-
     createdAt DateTime @default(now())
     updatedAt DateTime? @updatedAt
     isDeleted Boolean @default(false)
@@ -93,8 +91,6 @@ model Post {
     replies Reply[]
     musicalId BigInt? // Add this line
     musical Musical? @relation(fields: [musicalId], references: [musicalId]) // Corrected reference
-
-
     member Member @relation(fields: [memberId], references: [memberId])
 
     @@map("post")
@@ -168,4 +164,3 @@ model Wishlist {
     @@index([musicalId], map: "wishlist_musical_id_fkey")
     @@map("wishlist")
 }
-

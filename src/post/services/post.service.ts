@@ -214,7 +214,6 @@ export class PostService {
         });
     }
 
-
     async getHotPost(): Promise<HotPost> {
         const maxLikeCount = await prisma.post.aggregate({
             _max: {

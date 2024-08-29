@@ -54,7 +54,6 @@ export class AuthService {
 
         await prisma.member.update({
             where: {memberId: member.memberId},
-
             data: {refreshToken: refreshToken }
         });
     }

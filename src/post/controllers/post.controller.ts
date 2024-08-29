@@ -35,7 +35,7 @@ export class PostController {
         const { postId } = req.params;
 
         try {
-            const deletedPost = await postService.deletePost(Number(postId), member.memberId);
+            const deletedPost = await postService.deletePost(Number(postId), member.memberId)
             res.status(200).json({ result: true, message: "게시물 삭제에 성공함" });
         } catch (err: any) {
             console.error(err);
@@ -152,6 +152,7 @@ export class PostController {
 
     async getHotPost(req: Request, res: Response) {
         const member = req.user;
+
 
         if (!member) {
             res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });

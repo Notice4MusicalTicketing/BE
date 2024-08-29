@@ -57,3 +57,10 @@ app.listen(PORT, async () => {
     await fetchAndStoreData(startDate, endDate, genre, region, status);
 });
 
+app.listen(PORT, () => {
+    if (process.env.NODE_ENV !== 'production') {
+        console.log(`Server is running on : http://localhost:${PORT}`);
+        console.log(`Server is running on : http://localhost:${PORT}/api-docs`);
+        console.log(`Swagger YAML is available at: http://localhost:${PORT}/api-docs/swagger.yaml`);
+    }
+});
