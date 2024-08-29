@@ -4,6 +4,7 @@ import prisma from "../../config/database";
 import {Member} from "../../member/entities/member.entity";
 import {HotPostConverter, PostConverter} from "../entities/post.converter";
 
+
 const MAX_LENGTH = 20;
 
 export class PostService {
@@ -310,4 +311,3 @@ export class PostService {
         return postPreviews;
     }
 }
-
