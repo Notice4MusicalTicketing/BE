@@ -61,7 +61,7 @@ model Member {
     username      String     @unique
     password      String
     nickname      String
-    refreshToken  String?   
+    refreshToken  String 
 
     posts         Post[]
     comments      Comment[]

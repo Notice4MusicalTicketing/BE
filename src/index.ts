@@ -13,7 +13,7 @@ import swaggerDocument from "./config/openapi.docs";
 import musicalRoutes from "./musical/routes/musical.routes";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;  // 포트 3000으로 설정
 
 // CORS 설정
 app.use(cors({
@@ -36,7 +36,6 @@ app.use(musicalRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-
 // EJS 설정 (데이터 시각화를 위한 간단한 웹페이지)
 app.set('view engine', 'ejs');
 app.set('views', './src/views');
@@ -54,13 +53,8 @@ app.listen(PORT, async () => {
         console.log(`Swagger YAML is available at: http://localhost:${PORT}/api-docs/swagger.yaml`);
     }
 
+    // 데이터 페치 및 저장 호출
     await fetchAndStoreData(startDate, endDate, genre, region, status);
 });
 
-app.listen(PORT, () => {
-    if (process.env.NODE_ENV !== 'production') {
-        console.log(`Server is running on : http://localhost:${PORT}`);
-        console.log(`Server is running on : http://localhost:${PORT}/api-docs`);
-        console.log(`Swagger YAML is available at: http://localhost:${PORT}/api-docs/swagger.yaml`);
-    }
-});
+
