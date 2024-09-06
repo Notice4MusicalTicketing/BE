@@ -1,0 +1,110 @@
+# src/docs/dataFetch.docs.yaml
+openapi: 3.0.0
+info:
+  title: Notice4MusicalTicketing
+  version: 1.0.0
+  description: 야호 ^_^'
+tags:
+  - name: dataFetch
+    description: DB 관련 API
+
+paths:
+  /api/data/fetchAndStore:
+    post:
+      summary: Fetch and store data from external API
+      description: Fetches data from an external OpenAPI and stores it in the MySQL database.
+      tags:
+        - Data Fetch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                startDate:
+                  type: string
+                  example: "20240101"
+                  description: The start date for fetching data (YYYYMMDD)
+                endDate:
+                  type: string
+                  example: "20240131"
+                  description: The end date for fetching data (YYYYMMDD)
+                genre:
+                  type: string
+                  example: "뮤지컬"
+                  description: The genre of the performance
+                region:
+                  type: string
+                  example: "서울"
+                  description: The region of the performance
+                status:
+                  type: string
+                  example: "공연중"
+                  description: The status of the performance (e.g., ongoing, ended)
+      responses:
+        200:
+          description: Data fetched and stored successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Data fetched and stored successfully"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+  
+  /api/data/fetchDetail/{mt20id}:
+    get:
+      summary: Fetch detailed data for a specific musical
+      description: Fetches detailed data for a specific musical from an external OpenAPI.
+      tags:
+        - Data Fetch
+      parameters:
+        - in: path
+          name: mt20id
+          required: true
+          schema:
+            type: string
+          description: The ID of the musical to fetch details for
+      responses:
+        200:
+          description: Fetched detail data successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    example: { ... }  # Example JSON object for the detailed data
+        404:
+          description: Musical not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Musical not found"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
