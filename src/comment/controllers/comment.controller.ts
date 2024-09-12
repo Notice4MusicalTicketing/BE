@@ -33,8 +33,11 @@ export class CommentController {
         }
 
         try {
-            const comments = await commentService.getCommentsByPostId(Number(postId));
-            res.status(200).json({result: true, comments});
+            const result = await commentService.getCommentsByPostId(Number(postId));
+            const comments = result.comments;
+            const count = result.count;
+
+            res.status(200).json({result: true, comments, count});
         } catch (err: any) {
             console.error(err);
             res.status(500).json({result: false, message: err.message});

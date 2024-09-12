@@ -20,11 +20,13 @@ export class CommentService {
         });
     }
 
-    async getCommentsByPostId(postId: number): Promise<Comment []> {
+    async getCommentsByPostId(postId: number): Promise<{comments: Comment [], count: number}> {
         if (isNaN(postId) || postId === null || postId === undefined) {
             throw new Error("Invalid postId");
         }
-        const commentSchemas = await commentRepository.findCommentsByPostId(postId);
+
+        const response = await commentRepository.findCommentsByPostId(postId);
+        const commentSchemas = response.comments;
 
         if (commentSchemas === null || commentSchemas.length === 0) {
             throw new Error("게시물이 존재하지 않음");
@@ -32,7 +34,10 @@ export class CommentService {
 
         const comments = commentSchemas.map(commentSchema => CommentConverter.toEntity(commentSchema));
 
-        return comments;
+        return {
+            comments: comments,
+            count: response.count,
+        }
     }
 
     async deleteComment(commentId: number, postId: number, memberId: number): Promise<void> {

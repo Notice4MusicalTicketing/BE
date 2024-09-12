@@ -61,7 +61,7 @@ model Member {
     username      String     @unique
     password      String
     nickname      String
-    refreshToken  String?   
+    refreshToken  String?   @db.VarChar(255)
 
     posts         Post[]
     comments      Comment[]
@@ -139,11 +139,12 @@ model Reply {
 
 model Review {
     rating     Int
-    title      String
     content    String
     createdAt  DateTime @default(now())
     memberId   BigInt // 기존 member_id -> memberId
     musicalId  BigInt
+    warningCount Int @default(0)
+
     reviewId   BigInt   @id @default(autoincrement())
     member     Member   @relation(fields: [memberId], references: [memberId])
     musical    Musical  @relation(fields: [musicalId], references: [musicalId])

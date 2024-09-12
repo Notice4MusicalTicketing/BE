@@ -11,9 +11,20 @@ import memberRouter from './member/routes/member.route';
 import commentRoute from "./comment/routes/comment.route";
 import swaggerDocument from "./config/openapi.docs";
 import musicalRoutes from "./musical/routes/musical.routes";
+import {Member} from "./member/entities/member.entity";
+import loadEnv from "./config/env.config";
+import dotenv from "dotenv";
+import reviewRoute from "./review/routes/review.route";
+
+loadEnv();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+declare module 'express-serve-static-core' {
+    interface Request {
+        user?: Member;
+    }
+}
 
 // CORS 설정
 app.use(cors({
@@ -32,6 +43,7 @@ app.use('/api/member', memberRouter);
 app.use('/api/auth', authRoute);
 app.use('/api/post', postRoute);
 app.use('/api/comment', commentRoute);
+app.use('/api/review', reviewRoute);
 app.use(musicalRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -54,13 +66,5 @@ app.listen(PORT, async () => {
         console.log(`Swagger YAML is available at: http://localhost:${PORT}/api-docs/swagger.yaml`);
     }
 
-    await fetchAndStoreData(startDate, endDate, genre, region, status);
-});
-
-app.listen(PORT, () => {
-    if (process.env.NODE_ENV !== 'production') {
-        console.log(`Server is running on : http://localhost:${PORT}`);
-        console.log(`Server is running on : http://localhost:${PORT}/api-docs`);
-        console.log(`Swagger YAML is available at: http://localhost:${PORT}/api-docs/swagger.yaml`);
-    }
+    // await fetchAndStoreData(startDate,   endDate, genre, region, status);
 });
