@@ -13,7 +13,7 @@ paths:
       summary: 게시물 작성
       description: |
         게시글을 새로 작성합니다.
-        제목, 내용, 카테고리를 포함합니다.
+        제목, 내용, 카테고리, 뮤지컬 ID를 포함합니다.
       tags:
         - Post
       requestBody:
@@ -26,6 +26,7 @@ paths:
                 - title
                 - content
                 - category
+                - musicalId
               properties:
                 title:
                   type: string
@@ -33,6 +34,8 @@ paths:
                   type: string
                 category:
                   type: string
+                musicalId:
+                  type: integer
       responses:
         '201':
           description: 게시물 작성 성공
@@ -154,6 +157,8 @@ paths:
                         type: integer
                       category:
                         type: string
+                      musicalId:
+                        type: integer
         '400':
           description: 유효하지 않은 요청 또는 인증되지 않은 사용자
           content:
@@ -187,10 +192,13 @@ paths:
               required:
                 - title
                 - content
+                - category
               properties:
                 title:
                   type: string
                 content:
+                  type: string
+                category:
                   type: string
       responses:
         '200':
@@ -219,7 +227,7 @@ paths:
   /api/post/preview:
     get:
       summary: 모든 게시물 미리보기 조회 및 게시물 검색
-      description: 모든 게시물의 미리보기 및 카테고리 별 게시물 조회와 게시물 검색 기능을 합니다.
+      description: 모든 게시물의 미리보기 및 카테고리별 게시물 조회와 게시물 검색 기능을 합니다.
       tags:
         - Post
       parameters:
@@ -234,6 +242,16 @@ paths:
           schema:
             type: string
           description: 검색 기준
+        - in: query
+          name: cursor
+          schema:
+            type: string
+          description: 페이지네이션을 위한 커서
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: 페이지 사이즈 (기본값 20)
       responses:
         '200':
           description: 게시물 목록 조회 성공
@@ -261,6 +279,8 @@ paths:
                           type: integer
                         category:
                           type: string
+                        musicalId:
+                          type: integer
         '400':
           description: 유효하지 않은 요청 또는 인증되지 않은 사용자
           content:

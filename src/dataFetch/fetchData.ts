@@ -1,11 +1,17 @@
 import axios from 'axios';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+// import * as dotenv from 'dotenv';
+//
+// dotenv.config();
 
 console.log("API Key:", process.env.API_KEY); // API 키가 제대로 출력되는지 확인
 
-export async function fetchData(startDate: string, endDate: string, genre: string, region: string, status: string): Promise<string> {
+export async function fetchData(
+    startDate: string,
+    endDate: string,
+    genre: string,
+    region: string,
+    status: string
+): Promise<string> {
     const API_URL = 'http://kopis.or.kr/openApi/restful/pblprfr';
 
     try {
