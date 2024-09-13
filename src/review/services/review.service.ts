@@ -12,7 +12,6 @@ export class ReviewService {
         const reviewSchema: ReviewSchema = await prisma.review.create({
             data: {
                 memberId: member.memberId,
-                title: request.title,
                 content: request.content,
                 rating: request.rating,
                 musicalId: request.musicalId,

@@ -31,10 +31,10 @@ export class ReviewRepository{
             },
             select: {
                 reviewId: true,
-                title: true,
                 content: true,
                 createdAt: true,
                 rating: true,
+                warningCount: true,
                 memberId: true,
                 musicalId: true,
             },
@@ -43,10 +43,10 @@ export class ReviewRepository{
 
         const reviews: Review[] = reviewSchemas.map(reviewSchema => ({
             reviewId: Number(reviewSchema.reviewId),
-            title: reviewSchema.title,
             content: reviewSchema.content,
             createdAt: reviewSchema.createdAt,
             rating: reviewSchema.rating,
+            warningCount: reviewSchema.warningCount,
             memberId: Number(reviewSchema.memberId),
             musicalId: Number(reviewSchema.musicalId),
         }));
