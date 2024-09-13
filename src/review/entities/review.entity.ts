@@ -1,9 +1,9 @@
 export interface Review{
     reviewId: number;
-    title: string;
     content: string;
     createdAt: Date;
     rating: number;
+    warningCount: number;
 
     memberId: number;
     musicalId: number;
@@ -11,10 +11,10 @@ export interface Review{
 
 export interface ReviewSchema{
     reviewId: bigint;
-    title: string;
     content: string;
     createdAt: Date;
     rating: number;
+    warningCount: number;
 
     memberId: bigint;
     musicalId: bigint;
