@@ -44,4 +44,23 @@ export class ReviewController {
             res.status(501).json({result: false, message: err.message });
         }
     }
+
+    async addWarningCount(req: Request, res: Response): Promise<void> {
+        const member = req.user;
+
+        if (!member) {
+            res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });
+            return;
+        }
+
+        const { reviewId } = req.params;
+
+        try {
+            const addWarning = await reviewService.addWarningCount(Number(reviewId));
+            res.status(201).json({ result: true, message: "리뷰 신고하기 성공" });
+        } catch (err: any) {
+            console.error(err);
+            res.status(400).json({result: false, message: err.message });
+        }
+    }
 }
