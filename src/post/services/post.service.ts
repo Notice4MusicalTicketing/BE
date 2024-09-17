@@ -3,6 +3,10 @@ import {HotPost, Post, PostPreview} from "../entities/post.entity";
 import prisma from "../../config/database";
 import {Member} from "../../member/entities/member.entity";
 import {HotPostConverter, PostConverter} from "../entities/post.converter";
+import {Pagination} from "../../utils/pagination";
+import {PostRepository} from "../repository/post.repository";
+
+const postRepository = new PostRepository();
 
 
 const MAX_LENGTH = 20;
@@ -17,6 +21,7 @@ export class PostService {
                 content: request.content,
                 sample: this.extractSampleText(request.content),
                 category: request.category,
+                musicalId: request.musicalId,
             },
         });
     }
@@ -119,72 +124,37 @@ export class PostService {
     }
 
     // 전체 게시글 조회 (미리보기 조회)
-    async getAllPosts(): Promise<PostPreview[]> {
-        const postSchemas = await prisma.post.findMany({
-            where: {
-                isDeleted: false,
-            },
-            select: {
-                postId: true,
-                title: true,
-                sample: true,
-                likeCount: true,
-                replyCount: true,
-                category: true,
-                member: {
-                    select: {
-                        nickname: true,
-                    }
-                }
-            },
-        });
-
-        const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
-            postId: Number(postSchema.postId),
-            nickname: postSchema.member.nickname,
-            title: postSchema.title,
-            sample: postSchema.sample,
-            likeCount: postSchema.likeCount,
-            replyCount: postSchema.replyCount,
-            category: postSchema.category,
-        }));
+    async getAllPosts(
+        cursor: string | null = null,
+        pageSize: number = 20,
+    ): Promise<Pagination<PostPreview[]>> {
+        const postPreviews = await postRepository
+            .findPostPreviewsByRecent(cursor, pageSize);
 
         return postPreviews;
     }
 
     // category 별 게시글 조회 (미리보기 조회)
-    async getPostsByCategory(category: string): Promise<PostPreview[]> {
-        const postSchemas = await prisma.post.findMany({
-            where: {
-                category: category,
-                isDeleted: false,
-            },
-            select: {
-                postId: true,
-                title: true,
-                sample: true,
-                likeCount: true,
-                replyCount: true,
-                category: true,
-                member: {
-                    select: {
-                        nickname: true,
-                    }
-                }
-            }
-        });
-
-        const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
-            postId: Number(postSchema.postId),
-            nickname: postSchema.member.nickname,
-            title: postSchema.title,
-            sample: postSchema.sample,
-            likeCount: postSchema.likeCount,
-            replyCount: postSchema.replyCount,
-            category: postSchema.category,
-        }));
+    async getPostsByCategory(
+        category: string,
+        cursor: string | null = null,
+        pageSize: number = 20,
+    ): Promise<Pagination<PostPreview[]>> {
+        const postPreviews = await postRepository
+            .findPostPreviewsByCategory(category, cursor, pageSize)
 
         return postPreviews;
+    }
+
+    async searchPosts(
+        criteria: string,
+        cursor: string | null = null,
+        pageSize: number = 20,
+    ): Promise<Pagination<PostPreview[]>> {
+        const postPreview = await postRepository
+            .findPostPreviewsByCriteria(criteria, cursor, pageSize);
+
+        return postPreview;
     }
 
     async updatePost(postId: number, request: CreatePostDto, member: Member): Promise<void> {
@@ -213,6 +183,7 @@ export class PostService {
             },
         });
     }
+
 
     async getHotPost(): Promise<HotPost> {
         const maxLikeCount = await prisma.post.aggregate({
@@ -266,48 +237,5 @@ export class PostService {
         return "";
     }
 
-    async searchPosts(criteria: string): Promise<PostPreview[]> {
-        const postSchemas = await prisma.post.findMany({
-            where: {
-                isDeleted: false,
-                OR: [
-                    {
-                        content: {
-                            contains: criteria,
-                        },
-                    },
-                    {
-                        title: {
-                            contains: criteria,
-                        },
-                    },
-                ],
-            },
-            select: {
-                postId: true,
-                title: true,
-                sample: true,
-                likeCount: true,
-                replyCount: true,
-                category: true,
-                member: {
-                    select: {
-                        nickname: true,
-                    }
-                }
-            },
-        });
 
-        const postPreviews: PostPreview[] = postSchemas.map(postSchema => ({
-            postId: Number(postSchema.postId),
-            nickname: postSchema.member.nickname,
-            title: postSchema.title,
-            sample: postSchema.sample,
-            likeCount: postSchema.likeCount,
-            replyCount: postSchema.replyCount,
-            category: postSchema.category,
-        }));
-
-        return postPreviews;
-    }
 }
