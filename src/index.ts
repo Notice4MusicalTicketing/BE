@@ -19,6 +19,7 @@ import reviewRoute from "./review/routes/review.route";
 loadEnv();
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 declare module 'express-serve-static-core' {
     interface Request {
@@ -26,9 +27,14 @@ declare module 'express-serve-static-core' {
     }
 }
 
+
 // CORS 설정
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://ec2-52-78-180-65.ap-northeast-2.compute.amazonaws.com:3000'],
+    origin: [
+        'http://localhost:3000', // 로컬 개발 환경
+        'http://<EC2_PUBLIC_IP>:3000', // EC2 퍼블릭 IP 추가
+        'http://ec2-52-78-180-65.ap-northeast-2.compute.amazonaws.com:3000' // 추가된 도메인
+    ],
     credentials: true,
 }));
 
@@ -48,7 +54,6 @@ app.use(musicalRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-
 // EJS 설정 (데이터 시각화를 위한 간단한 웹페이지)
 app.set('view engine', 'ejs');
 app.set('views', './src/views');
@@ -59,12 +64,15 @@ const genre = '뮤지컬'; // 원하는 장르
 const region = '서울'; // 원하는 지역
 const status = '공연중'; // 원하는 공연 상태
 
-app.listen(PORT, async () => {
+// 서버 실행
+app.listen(PORT, '0.0.0.0', async () => {  // 호스트를 '0.0.0.0'으로 변경
     if (process.env.NODE_ENV !== 'production') {
         console.log(`Server is running on : http://localhost:${PORT}`);
         console.log(`Server is running on : http://localhost:${PORT}/api-docs`);
         console.log(`Swagger YAML is available at: http://localhost:${PORT}/api-docs/swagger.yaml`);
     }
 
-    // await fetchAndStoreData(startDate,   endDate, genre, region, status);
+    // 데이터 페치 및 저장 호출
+    await fetchAndStoreData(startDate, endDate, genre, region, status);
 });
+

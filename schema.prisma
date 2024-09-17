@@ -63,6 +63,7 @@ model Member {
     nickname      String
     refreshToken  String?   @db.VarChar(255)
 
+
     posts         Post[]
     comments      Comment[]
     replies       Reply[]
