@@ -1,6 +1,7 @@
 export interface Post {
     postId: number;
     memberId: number;
+    musicalId?: number | null;
     title: string;
     content: string;
     sample: string;
@@ -17,6 +18,7 @@ export interface Post {
 export interface PostSchema {
     postId: bigint;
     memberId: bigint;
+    musicalId?: bigint | null;
     title: string;
     content: string;
     sample: string;
@@ -38,6 +40,7 @@ export interface PostPreview {
     likeCount: number;
     replyCount: number;
     category: string;
+    createdAt: Date;
 }
 
 export interface HotPost {

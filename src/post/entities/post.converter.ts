@@ -1,4 +1,4 @@
-import {HotPost, Post, PostSchema} from "./post.entity"
+import {HotPost, Post, PostPreview, PostSchema} from "./post.entity"
 
 export const PostConverter = {
 
@@ -47,5 +47,20 @@ export const HotPostConverter = {
             postId: Number(postSchema.postId),
             title: postSchema.title,
         };
+    }
+}
+
+export const PostPreviewConverter = {
+    fromSchema(postSchema: any): PostPreview {
+        return {
+            postId: Number(postSchema.postId),
+            nickname: postSchema.member.nickname,
+            title: postSchema.title,
+            sample: postSchema.sample,
+            likeCount: postSchema.likeCount,
+            replyCount: postSchema.replyCount,
+            category: postSchema.category,
+            createdAt: postSchema.createdAt,
+        }
     }
 }

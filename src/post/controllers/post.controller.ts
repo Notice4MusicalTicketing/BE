@@ -2,6 +2,7 @@ import { PostService } from "../services/post.service";
 import { Request, Response } from "express";
 import { CreatePostDto } from "../dtos/post.dto";
 import { Post, PostPreview } from "../entities/post.entity";
+import {Pagination} from "../../utils/pagination";
 
 const postService = new PostService();
 
@@ -65,14 +66,14 @@ export class PostController {
     async getPreviewPosts(req: Request, res: Response) {
         const member = req.user;
         const { category, criteria } = req.query;
-
+        let { cursor, pageSize } = req.query;
         if (!member) {
             res.status(400).json({ result: false, message: `로그인 중이 아닙니다.` });
             return;
         }
 
         try {
-            let posts: PostPreview[];
+            let posts: Pagination<PostPreview[]>;
             if (category) {
                 if (!(category === "review" || category === "friend" || category === "deal")) {
                     res.status(400).send(`카테고리 타입이 유효하지 않음`);
@@ -82,7 +83,7 @@ export class PostController {
             } else if (criteria) {
                 posts = await postService.searchPosts(String(criteria));
             } else {
-                posts = await postService.getAllPosts();
+                posts = await postService.getAllPosts(String(cursor), Number(pageSize));
             }
 
             res.status(200).json({ result: true, posts });

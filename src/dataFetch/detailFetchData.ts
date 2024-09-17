@@ -1,9 +1,6 @@
 // detailFetchData.ts
 import axios from 'axios';
-import * as dotenv from 'dotenv';
 import qs from 'qs';
-
-dotenv.config();
 
 const apiKey = process.env.API_KEY;
 

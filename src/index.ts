@@ -11,9 +11,22 @@ import memberRouter from './member/routes/member.route';
 import commentRoute from "./comment/routes/comment.route";
 import swaggerDocument from "./config/openapi.docs";
 import musicalRoutes from "./musical/routes/musical.routes";
+import {Member} from "./member/entities/member.entity";
+import loadEnv from "./config/env.config";
+import dotenv from "dotenv";
+import reviewRoute from "./review/routes/review.route";
+
+loadEnv();
 
 const app = express();
-const PORT = parseInt(process.env.PORT || '3000', 10);  // 포트 3000으로 설정 및 명시적 변환
+
+const PORT = process.env.PORT || 3000;
+declare module 'express-serve-static-core' {
+    interface Request {
+        user?: Member;
+    }
+}
+
 
 // CORS 설정
 app.use(cors({
@@ -36,6 +49,7 @@ app.use('/api/member', memberRouter);
 app.use('/api/auth', authRoute);
 app.use('/api/post', postRoute);
 app.use('/api/comment', commentRoute);
+app.use('/api/review', reviewRoute);
 app.use(musicalRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -61,3 +75,4 @@ app.listen(PORT, '0.0.0.0', async () => {  // 호스트를 '0.0.0.0'으로 변�
     // 데이터 페치 및 저장 호출
     await fetchAndStoreData(startDate, endDate, genre, region, status);
 });
+
