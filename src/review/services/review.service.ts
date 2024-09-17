@@ -32,7 +32,26 @@ export class ReviewService {
 
     // 리뷰 신고하기 기능
     async addWarningCount(reviewId: number){
+        const reviewSchema = await prisma.review.findFirst({
+            where: {
+                reviewId: reviewId,
+            }
+        })
 
+        if (reviewSchema === null){
+            throw new Error("리뷰가 존재하지 않음");
+        }
+
+        await prisma.review.update({
+            where: {
+                reviewId: BigInt(reviewId),
+            },
+            data: {
+                warningCount: {
+                    increment: 1,
+                }
+            }
+        });
     }
 
     // rating avg 구하기
