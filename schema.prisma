@@ -61,7 +61,7 @@ model Member {
     username      String     @unique
     password      String
     nickname      String
-    refreshToken  String 
+    refreshToken String?   // 선택적 필드로 설정
 
     posts         Post[]
     comments      Comment[]

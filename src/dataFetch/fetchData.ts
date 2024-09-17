@@ -12,13 +12,13 @@ export async function fetchData(startDate: string, endDate: string, genre: strin
         const response = await axios.get(API_URL, {
             params: {
                 service: process.env.API_KEY,
-                stdate: startDate, // 시작 날짜 (YYYYMMDD)
-                eddate: endDate, // 종료 날짜 (YYYYMMDD)
+                stdate: "20240901", // 시작 날짜 (YYYYMMDD)
+                eddate: "20241001", // 종료 날짜 (YYYYMMDD)
                 cpage: 1, // 페이지 번호
                 rows: 100, // 페이지당 항목 수
-                genre: genre, // 장르 (필요 시 매핑)
-                region: region, // 지역 (필요 시 매핑)
-                prfstate: status, // 공연 상태 (진행 중, 종료 등)
+                genre: "GGGA", // 장르 (필요 시 매핑)
+                region: "11", // 지역 (필요 시 매핑)
+                prfstate: "01", // 공연 상태 (진행 중, 종료 등)
             }
         });
 
