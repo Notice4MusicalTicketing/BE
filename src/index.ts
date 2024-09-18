@@ -20,7 +20,7 @@ loadEnv();
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 declare module 'express-serve-static-core' {
     interface Request {
         user?: Member;
@@ -56,13 +56,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // EJS 설정 (데이터 시각화를 위한 간단한 웹페이지)
 app.set('view engine', 'ejs');
-app.set('views', './src/views');
 
-const startDate = '20240101'; // 원하는 시작 날짜
-const endDate = '20240131'; // 원하는 종료 날짜
+const startDate = '20240910'; // 원하는 시작 날짜
+const endDate = '20241030'; // 원하는 종료 날짜
 const genre = '뮤지컬'; // 원하는 장르
 const region = '서울'; // 원하는 지역
-const status = '공연중'; // 원하는 공연 상태
+const status = '공연예정'; // 원하는 공연 상태
 
 // 서버 실행
 app.listen(PORT, '0.0.0.0', async () => {  // 호스트를 '0.0.0.0'으로 변경

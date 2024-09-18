@@ -1,6 +1,6 @@
 import express from 'express';
 import prisma from "../../config/database";
-import {fetchDetailData} from "../../dataFetch/detailFetchData";
+import {fetchDetailData} from "../../dataFetch/fetchData";
 import {fetchAndStoreData} from "../../dataFetch/fetchAndStoreData";
 const router = express.Router();
 

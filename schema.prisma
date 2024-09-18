@@ -25,20 +25,20 @@ model Musical {
 model MusicalDetail {
     id                 BigInt         @id @default(autoincrement())
     musicalId          BigInt         @unique
-    facilityName       String         @default("") // 기본값 추가
-    cast               String         @default("") // 기본값 추가
-    runtime            Int            @default(0) // 기본값 추가
-    ageRating          String         @default("") // 기본값 추가
-    productionCompany  String         @default("") // 기본값 추가
-    ticketPrice        String         @default("") // 기본값 추가
-    posterImagePath    String         @default("") // 기본값 추가
-    synopsis           String         @default("") // 기본값 추가
-    genre              String         @default("") // 기본값 추가
-    introImages        Json           @default("{}") // 기본값 추가
-    showtimes          String         @default("") // 기본값 추가
-    facilityDetails    String         @default("") // 기본값 추가
+    facilityName       String         @default("") // 공연 시설 이름
+    cast               String         @default("") // 공연 출연진
+    runtime            Int?            // 공연 런타임
+    ageRating          String         @default("") // 공연 연령
+    productionCompany  String         @default("") // 제작사
+    ticketPrice        String         @default("") // 티켓 가격
+    posterImagePath    String         @default("") // 공연 포스터
+    synopsis           String         @default("") // 공연 줄거리
+    genre              String         @default("") // 장르
+    introImages        Json           @default("{}") // 공연 이미지
+    showtimes          String         @default("") // 공연 시간
+    facilityDetails    String         @default("") // 공연 시설 정보
     musical            Musical        @relation(fields: [musicalId], references: [musicalId])
-    ticketAgencies     TicketAgency[]
+    ticketAgencies     TicketAgency[] // 예매처 정보
 
     @@map("musical_detail")
 }

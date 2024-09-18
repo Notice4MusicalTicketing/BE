@@ -1,38 +1,49 @@
+// fetchData.ts
 import axios from 'axios';
-// import * as dotenv from 'dotenv';
-//
-// dotenv.config();
+import qs from 'qs';
+import dotenv from 'dotenv'; // 추가
+dotenv.config(); // 추가
 
-console.log("API Key:", process.env.API_KEY); // API 키가 제대로 출력되는지 확인
+const apiKey = process.env.API_KEY; // .env 파일에서 API_KEY를 가져옴
 
-export async function fetchData(
-    startDate: string,
-    endDate: string,
-    genre: string,
-    region: string,
-    status: string
-): Promise<string> {
+export async function fetchData(startDate: string, endDate: string, genre: string, region: string, status: string): Promise<string> {
     const API_URL = 'http://kopis.or.kr/openApi/restful/pblprfr';
-
     try {
         const response = await axios.get(API_URL, {
             params: {
                 service: process.env.API_KEY,
-                stdate: "20240901", // 시작 날짜 (YYYYMMDD)
-                eddate: "20241001", // 종료 날짜 (YYYYMMDD)
-                cpage: 1, // 페이지 번호
-                rows: 100, // 페이지당 항목 수
-                genre: "GGGA", // 장르 (필요 시 매핑)
-                region: "11", // 지역 (필요 시 매핑)
-                prfstate: "01", // 공연 상태 (진행 중, 종료 등)
+                stdate: startDate, 
+                eddate: endDate, 
+                cpage: 1, 
+                rows: 100, 
+                genre: genre, 
+                region: region,
+                prfstate: status, 
             }
         });
-
-        //console.log(response);
-        console.log('fetchData.ts')
+        //console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching data:', error);
         throw error;
     }
 }
+
+export async function fetchDetailData(mt20id: string) {
+    try {
+        const params = {
+            service: apiKey,
+            id: mt20id,
+        };
+
+        const url = `http://www.kopis.or.kr/openApi/restful/pblprfr/${mt20id}?service=${apiKey}`;
+        const response = await axios.get(url);
+        //console.log(url);
+        //console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching detail data:', error);
+        throw error;
+    }
+}
+
