@@ -8,7 +8,7 @@ export class ReviewRepository{
         musicalId: number,
         cursor: string | null = null,
         pageSize: number = 20.
-    ): Promise<Pagination<Review[]>> {
+    ): Promise<Pagination<(Review & {averageRating: number})[]>> {
         let cursorDate: Date;
         if (cursor) {
             cursorDate = new Date(cursor);
@@ -37,11 +37,16 @@ export class ReviewRepository{
                 warningCount: true,
                 memberId: true,
                 musicalId: true,
+                musical: {
+                    select: {
+                        averageRating: true,
+                    }
+                },
             },
             take: pageSize,
         });
 
-        const reviews: Review[] = reviewSchemas.map(reviewSchema => ({
+        const reviews: (Review & {averageRating: number})[] = reviewSchemas.map(reviewSchema => ({
             reviewId: Number(reviewSchema.reviewId),
             content: reviewSchema.content,
             createdAt: reviewSchema.createdAt,
@@ -49,14 +54,14 @@ export class ReviewRepository{
             warningCount: reviewSchema.warningCount,
             memberId: Number(reviewSchema.memberId),
             musicalId: Number(reviewSchema.musicalId),
+            averageRating: reviewSchema.musical.averageRating,
         }));
 
         const elementCount = reviews.length;
         const lastCreatedAt = reviewSchemas[elementCount - 1]?.createdAt;
         const hasNext = lastCreatedAt ?
-            (await prisma.post.count({
+            (await prisma.review.count({
                 where: {
-                    isDeleted: false,
                     createdAt: {
                         lt: lastCreatedAt,
                     },
@@ -64,11 +69,7 @@ export class ReviewRepository{
                 take: 1,
             })) > 0
             : false;
-        const totalCount = await prisma.post.count({
-            where: {
-                isDeleted: false,
-            },
-        });
+        const totalCount = await prisma.review.count();
 
         const cursorInfo: Cursor = {
             cursor: hasNext ? lastCreatedAt.toISOString() : null,

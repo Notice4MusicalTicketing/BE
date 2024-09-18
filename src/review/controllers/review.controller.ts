@@ -19,7 +19,7 @@ export class ReviewController {
 
         try {
             const newReview = await reviewService.createReview(createReviewDto, member);
-            res.status(201).json({ result: true, message: "해당 뮤지컬에 대한 리뷰가 작성됨" });
+            res.status(201).json({ result: true, message: "리뷰가 작성됨" });
         } catch (err: any) {
             console.error(err);
             res.status(500).json({result: false, message: "리뷰 작성에 실패함"});
@@ -37,8 +37,8 @@ export class ReviewController {
         }
 
         try {
-            const reviews: Pagination<Review[]> = await reviewService.getReviewsByMusicalId(Number(musicalId), String(cursor));
-            res.status(200).json({ result: true, message: reviews });
+            const reviews: Pagination<(Review & {averageRating: number})[]> = await reviewService.getReviewsByMusicalId(Number(musicalId), String(cursor));
+            res.status(200).json({ result: true, reviews });
         } catch (err: any) {
             console.error(err);
             res.status(501).json({result: false, message: err.message });
