@@ -51,17 +51,16 @@ export async function storeData(xmlData: string): Promise<void> {
 
             // 예매처 정보 처리
             const agencies = detail.relates && detail.relates[0] ? detail.relates[0].relate : [];
-            //console.log(agencies);
+            
             if (!agencies || !Array.isArray(agencies)) {
                 console.error('No ticket agencies data found for musical ID:', musical.mt20id[0]);
                 continue;
             }
             const ticketAgencies = agencies.map((agency: any) => ({
-                name: agency.agencyname ? agency.agencyname[0] : '',
-                url: agency.url ? agency.url[0] : ''
-            }));
-
-            
+                name: agency.relatenm ? agency.relatenm[0] : '',
+                url: agency.relateurl ? agency.relateurl[0] : ''
+            })); 
+            console.log('Ticket Agencies:', ticketAgencies);
 
             // 데이터베이스에 저장
             await prisma.musical.upsert({
