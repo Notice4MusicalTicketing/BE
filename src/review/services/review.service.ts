@@ -8,7 +8,7 @@ import {ReviewRepository} from "../repository/review.repository";
 const reviewRepository = new ReviewRepository();
 
 export class ReviewService {
-    async createReview(request: CreateReviewDto, member: Member): Promise<void> {
+    async createReview(request: CreateReviewDto, member: Member) {
         const reviewSchema: ReviewSchema = await prisma.review.create({
             data: {
                 memberId: member.memberId,
@@ -18,13 +18,33 @@ export class ReviewService {
             }
             }
         )
+
+        const ratingAverage = await prisma.review.aggregate({
+            _avg: {
+                rating: true,
+            },
+            where: {
+                musicalId: request.musicalId,
+            },
+        });
+
+        if (ratingAverage._avg.rating !== null) {
+            await prisma.musical.update({
+                where: {
+                    musicalId: request.musicalId,
+                },
+                data: {
+                    averageRating: ratingAverage._avg.rating,
+                },
+            });
+        }
     }
 
     async getReviewsByMusicalId(
         musicalId: number,
         cursor: string | null = null,
         pageSize: number = 20,
-    ): Promise<Pagination<Review[]>> {
+    ): Promise<Pagination<(Review & {averageRating: number})[]>> {
         const Reviews = await reviewRepository.findReviewsByMusicalId(musicalId, cursor, pageSize);
 
         return Reviews;
@@ -54,8 +74,4 @@ export class ReviewService {
         });
     }
 
-    // rating avg 구하기
-    async getRatingAverage(rating: number){
-
-    }
 }

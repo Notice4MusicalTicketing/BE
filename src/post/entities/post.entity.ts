@@ -1,7 +1,7 @@
 export interface Post {
     postId: number;
     memberId: number;
-    musicalId?: number | null;
+    musicalId?: number | null | undefined;
     title: string;
     content: string;
     sample: string;
@@ -18,7 +18,7 @@ export interface Post {
 export interface PostSchema {
     postId: bigint;
     memberId: bigint;
-    musicalId?: bigint | null;
+    musicalId?: bigint | null | undefined;
     title: string;
     content: string;
     sample: string;
