@@ -21,6 +21,7 @@ loadEnv();
 const app = express();
 
 const PORT = 3000;
+
 declare module 'express-serve-static-core' {
     interface Request {
         user?: Member;
