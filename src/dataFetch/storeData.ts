@@ -39,15 +39,29 @@ export async function storeData(xmlData: string): Promise<void> {
             const poster = detail.poster ? detail.poster[0] : '';
             const genrenm = detail.genrenm ? detail.genrenm[0] : '';
             const prfstate = detail.prfstate ? detail.prfstate[0] : '';
-            const cast = detail.prfcast ? detail.prfcast[0] : ''; // 필드명 확인
+            const cast = detail.prfcast ? detail.prfcast[0] : '';
             const runtime = detail.prfruntime && detail.prfruntime[0] ? parseInt(detail.prfruntime[0], 10) : 0;
-            const age_rating = detail.prfage ? detail.prfage[0] : ''; // 필드명 확인
-            const production_company = detail.entrpsnm ? detail.entrpsnm[0] : ''; // 필드명 확인
-            const ticket_price = detail.pcseguidance ? detail.pcseguidance[0] : ''; // 필드명 확인
-            const synopsis = detail.sty ? detail.sty[0] : ''; // 필드명 확인
-            const intro_images = detail.styurls ? JSON.parse(JSON.stringify(detail.styurls[0])) : []; // 필드명 확인 및 JSON 변환
+            const ageRating = detail.prfage ? detail.prfage[0] : '';
+            const productionCompany = detail.entrpsnm ? detail.entrpsnm[0] : '';
+            const ticketPrice = detail.pcseguidance ? detail.pcseguidance[0] : '';
+            const synopsis = detail.sty ? detail.sty[0] : '';
+            const introImages = detail.styurls ? JSON.parse(JSON.stringify(detail.styurls[0])) : [];
             const showtimes = detail.dtguidance ? detail.dtguidance[0] : '';
-            const facility_details = detail.fcltynm ? detail.fcltynm[0] : '';
+            const facilityDetails = detail.fcltynm ? detail.fcltynm[0] : '';
+
+            // 예매처 정보 처리
+            const agencies = detail.relates && detail.relates[0] ? detail.relates[0].relate : [];
+            //console.log(agencies);
+            if (!agencies || !Array.isArray(agencies)) {
+                console.error('No ticket agencies data found for musical ID:', musical.mt20id[0]);
+                continue;
+            }
+            const ticketAgencies = agencies.map((agency: any) => ({
+                name: agency.agencyname ? agency.agencyname[0] : '',
+                url: agency.url ? agency.url[0] : ''
+            }));
+
+            
 
             // 데이터베이스에 저장
             await prisma.musical.upsert({
@@ -58,19 +72,38 @@ export async function storeData(xmlData: string): Promise<void> {
                     endDate: prfpdto,
                     status: prfstate,
                     details: {
-                        update: {
-                            facilityName: fcltynm,
-                            posterImagePath: poster,
-                            genre: genrenm,
-                            cast: cast,
-                            runtime: runtime,  // 여기서 runtime 값이 제대로 설정됨
-                            ageRating: age_rating,
-                            productionCompany: production_company,
-                            ticketPrice: ticket_price,
-                            synopsis: synopsis,
-                            introImages: intro_images,
-                            showtimes: showtimes,
-                            facilityDetails: facility_details
+                        upsert: {
+                            where: { musicalId: mt20id },
+                            update: {
+                                facilityName: fcltynm,
+                                posterImagePath: poster,
+                                genre: genrenm,
+                                cast: cast,
+                                runtime: runtime,
+                                ageRating: ageRating,
+                                productionCompany: productionCompany,
+                                ticketPrice: ticketPrice,
+                                synopsis: synopsis,
+                                introImages: introImages,
+                                showtimes: showtimes,
+                                facilityDetails: facilityDetails,
+                                ticketAgencies: ticketAgencies // JSON field 업데이트
+                            },
+                            create: {
+                                facilityName: fcltynm,
+                                posterImagePath: poster,
+                                genre: genrenm,
+                                cast: cast,
+                                runtime: runtime,
+                                ageRating: ageRating,
+                                productionCompany: productionCompany,
+                                ticketPrice: ticketPrice,
+                                synopsis: synopsis,
+                                introImages: introImages,
+                                showtimes: showtimes,
+                                facilityDetails: facilityDetails,
+                                ticketAgencies: ticketAgencies // JSON field 생성
+                            }
                         }
                     }
                 },
@@ -86,19 +119,19 @@ export async function storeData(xmlData: string): Promise<void> {
                             posterImagePath: poster,
                             genre: genrenm,
                             cast: cast,
-                            runtime: runtime,  // 여기서도 runtime 값이 있어야 함
-                            ageRating: age_rating,
-                            productionCompany: production_company,
-                            ticketPrice: ticket_price,
+                            runtime: runtime,
+                            ageRating: ageRating,
+                            productionCompany: productionCompany,
+                            ticketPrice: ticketPrice,
                             synopsis: synopsis,
-                            introImages: intro_images,
+                            introImages: introImages,
                             showtimes: showtimes,
-                            facilityDetails: facility_details
+                            facilityDetails: facilityDetails,
+                            ticketAgencies: ticketAgencies // JSON field 생성
                         }
                     }
                 }
             });
-            
         }
 
         console.log('Data stored successfully');

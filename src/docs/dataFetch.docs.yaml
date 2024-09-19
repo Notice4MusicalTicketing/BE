@@ -128,3 +128,182 @@ paths:
                   error:
                     type: string
                     example: "Internal server error"
+
+  
+  /api/data/musicals/{id}:
+    get:
+      summary: getting musical detail
+      description: getting entire musical lists with each small info 
+      tags:
+        - Data Fetch
+      parameters:
+        - in: path
+          name: mt20id
+          required: true
+          schema:
+            type: string
+          description: The ID of the musical to fetch details for
+      responses:
+        200:
+          description: Fetched detail data successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      mt20id:
+                        type: string
+                        example: "12345"
+                      title:
+                        type: string
+                        example: "Example Musical"
+                      
+                      startDate:
+                        type: string
+                        example: "2024-01-01"
+                      endDate:
+                        type: string
+                        example: "2024-01-31"
+                      status:
+                        type: string
+                        example: "공연중"
+                      posterImage:
+                        type: string
+                        example: "image.jpg"
+                      genre:
+                        type: string
+                        example: "뮤지컬"
+                      cast:
+                        type: string
+                        example: "배우, 배우, 배우"
+                      
+                      runtime:
+                       type: int
+                       example: 120
+                      
+                      ageRating: 
+                       type: string
+                      example: "12"
+
+                      productionCompany:
+                      type: string
+                      example: "기획사"
+
+                      ticketPrice:
+                       type: string
+                       example: " "
+
+                      synopsis:
+                      type: string
+                       example: " "
+
+                       introImages: 
+                       type: string
+                       example:
+                        "http://example.com/intro1.jpg"
+
+                       showtimes:
+                       type: string
+                       example: "금요일(18:00), 토요일(14:00)"
+
+                       facilityDetails: 
+                       type: string
+                       example: "Example Facility"
+                        
+                       region:
+                        type: string
+                        example: "서울"
+                      
+                   
+        404:
+          description: Musical not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Musical not found"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+
+                    /api/data/musicals:
+
+    get:
+      summary: getting musical list 
+      description: getting entire musical lists with each small info 
+      tags:
+        - Data Fetch
+      parameters:
+        - in: path
+          name: mt20id
+          required: true
+          schema:
+            type: string
+          description: The ID of the musical to fetch details for
+      responses:
+        200:
+          description: Fetched detail data successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      mt20id:
+                        type: string
+                        example: "12345"
+                      title:
+                        type: string
+                        example: "Example Musical"
+                      genre:
+                        type: string
+                        example: "뮤지컬"
+                      region:
+                        type: string
+                        example: "서울"
+                      status:
+                        type: string
+                        example: "공연중"
+                      startDate:
+                        type: string
+                        example: "2024-01-01"
+                      endDate:
+                        type: string
+                        example: "2024-01-31"
+        404:
+          description: Musical not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Musical not found"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error"
+
+
