@@ -18,6 +18,7 @@ export const PostConverter = {
             replyCount: postSchema.replyCount,
             views: postSchema.views,
             category: postSchema.category,
+            musicalId: postSchema.musicalId != null ? Number(postSchema.musicalId) : null,
         };
     },
 
@@ -37,6 +38,7 @@ export const PostConverter = {
             replyCount: post.replyCount,
             views: post.views,
             category: post.category,
+            musicalId: post.musicalId != null ? BigInt(post.musicalId) : null,
         };
     }
 };
