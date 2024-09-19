@@ -1,5 +1,6 @@
 import { parseString } from 'xml2js';
 import prisma from "../config/database";
+import { fetchDetailData } from "../dataFetch/fetchData";
 
 export async function storeData(xmlData: string): Promise<void> {
     try {
@@ -14,24 +15,52 @@ export async function storeData(xmlData: string): Promise<void> {
         // JSON 데이터에서 필요한 정보 추출
         const musicals = parsedData.dbs.db;
         for (const musical of musicals) {
-            // mt20id에서 숫자만 추출 후 BigInt로 변환
             const mt20id = BigInt(musical.mt20id[0].replace(/\D/g, ''));
             const prfnm = musical.prfnm[0];
             const prfpdfrom = new Date(musical.prfpdfrom[0]);
             const prfpdto = new Date(musical.prfpdto[0]);
-            const fcltynm = musical.fcltynm[0];
-            const poster = musical.poster[0];
-            const genrenm = musical.genrenm[0];
-            const prfstate = musical.prfstate[0];
-            const cast = musical.cast ? musical.cast[0] : '';
-            const runtime = musical.runtime ? parseInt(musical.runtime[0], 10) : 0; // 기본값으로 0을 사용
-            const age_rating = musical.age_rating ? musical.age_rating[0] : '';
-            const production_company = musical.production_company ? musical.production_company[0] : '';
-            const ticket_price = musical.ticket_price ? musical.ticket_price[0] : '';
-            const synopsis = musical.synopsis ? musical.synopsis[0] : '';
-            const intro_images = musical.intro_images ? JSON.parse(musical.intro_images[0]) : [];
-            const showtimes = musical.showtimes ? musical.showtimes[0] : '';
-            const facility_details = musical.facility_details ? musical.facility_details[0] : '';
+
+            // 상세 정보 가져오기
+            const detailData = await fetchDetailData(musical.mt20id[0]);
+            if (!detailData) {
+                console.error('No detail data found for musical ID: ' + musical.mt20id[0]);
+                continue; // 데이터를 못 가져왔으면 건너뜀
+            }
+
+            const parsedDetail = await new Promise<any>((resolve, reject) => {
+                parseString(detailData, (err, result) => {
+                    if (err) reject(err);
+                    else resolve(result);
+                });
+            });
+
+            const detail = parsedDetail.dbs.db[0];
+            const fcltynm = detail.fcltynm ? detail.fcltynm[0] : '';
+            const poster = detail.poster ? detail.poster[0] : '';
+            const genrenm = detail.genrenm ? detail.genrenm[0] : '';
+            const prfstate = detail.prfstate ? detail.prfstate[0] : '';
+            const cast = detail.prfcast ? detail.prfcast[0] : '';
+            const runtime = detail.prfruntime && detail.prfruntime[0] ? parseInt(detail.prfruntime[0], 10) : 0;
+            const ageRating = detail.prfage ? detail.prfage[0] : '';
+            const productionCompany = detail.entrpsnm ? detail.entrpsnm[0] : '';
+            const ticketPrice = detail.pcseguidance ? detail.pcseguidance[0] : '';
+            const synopsis = detail.sty ? detail.sty[0] : '';
+            const introImages = detail.styurls ? JSON.parse(JSON.stringify(detail.styurls[0])) : [];
+            const showtimes = detail.dtguidance ? detail.dtguidance[0] : '';
+            const facilityDetails = detail.fcltynm ? detail.fcltynm[0] : '';
+
+            // 예매처 정보 처리
+            const agencies = detail.relates && detail.relates[0] ? detail.relates[0].relate : [];
+            
+            if (!agencies || !Array.isArray(agencies)) {
+                console.error('No ticket agencies data found for musical ID:', musical.mt20id[0]);
+                continue;
+            }
+            const ticketAgencies = agencies.map((agency: any) => ({
+                name: agency.relatenm ? agency.relatenm[0] : '',
+                url: agency.relateurl ? agency.relateurl[0] : ''
+            })); 
+            console.log('Ticket Agencies:', ticketAgencies);
 
             // 데이터베이스에 저장
             await prisma.musical.upsert({
@@ -42,19 +71,38 @@ export async function storeData(xmlData: string): Promise<void> {
                     endDate: prfpdto,
                     status: prfstate,
                     details: {
-                        update: {
-                            facilityName: fcltynm,
-                            posterImagePath: poster,
-                            genre: genrenm,
-                            cast: cast,
-                            runtime: runtime,
-                            ageRating: age_rating,
-                            productionCompany: production_company,
-                            ticketPrice: ticket_price,
-                            synopsis: synopsis,
-                            introImages: intro_images,
-                            showtimes: showtimes,
-                            facilityDetails: facility_details
+                        upsert: {
+                            where: { musicalId: mt20id },
+                            update: {
+                                facilityName: fcltynm,
+                                posterImagePath: poster,
+                                genre: genrenm,
+                                cast: cast,
+                                runtime: runtime,
+                                ageRating: ageRating,
+                                productionCompany: productionCompany,
+                                ticketPrice: ticketPrice,
+                                synopsis: synopsis,
+                                introImages: introImages,
+                                showtimes: showtimes,
+                                facilityDetails: facilityDetails,
+                                ticketAgencies: ticketAgencies // JSON field 업데이트
+                            },
+                            create: {
+                                facilityName: fcltynm,
+                                posterImagePath: poster,
+                                genre: genrenm,
+                                cast: cast,
+                                runtime: runtime,
+                                ageRating: ageRating,
+                                productionCompany: productionCompany,
+                                ticketPrice: ticketPrice,
+                                synopsis: synopsis,
+                                introImages: introImages,
+                                showtimes: showtimes,
+                                facilityDetails: facilityDetails,
+                                ticketAgencies: ticketAgencies // JSON field 생성
+                            }
                         }
                     }
                 },
@@ -71,13 +119,14 @@ export async function storeData(xmlData: string): Promise<void> {
                             genre: genrenm,
                             cast: cast,
                             runtime: runtime,
-                            ageRating: age_rating,
-                            productionCompany: production_company,
-                            ticketPrice: ticket_price,
+                            ageRating: ageRating,
+                            productionCompany: productionCompany,
+                            ticketPrice: ticketPrice,
                             synopsis: synopsis,
-                            introImages: intro_images,
+                            introImages: introImages,
                             showtimes: showtimes,
-                            facilityDetails: facility_details
+                            facilityDetails: facilityDetails,
+                            ticketAgencies: ticketAgencies // JSON field 생성
                         }
                     }
                 }
@@ -87,7 +136,6 @@ export async function storeData(xmlData: string): Promise<void> {
         console.log('Data stored successfully');
     } catch (error) {
         console.error('Error storing data:', error);
-        console.log('storeData.ts');
     } finally {
         await prisma.$disconnect();
     }

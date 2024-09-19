@@ -1,38 +1,71 @@
+// fetchData.ts
 import axios from 'axios';
-// import * as dotenv from 'dotenv';
-//
-// dotenv.config();
+import qs from 'qs';
+import dotenv from 'dotenv'; 
+dotenv.config(); 
 
-console.log("API Key:", process.env.API_KEY); // API 키가 제대로 출력되는지 확인
+const apiKey = process.env.API_KEY; // .env 파일에서 API_KEY를 가져옴
 
-export async function fetchData(
-    startDate: string,
-    endDate: string,
-    genre: string,
-    region: string,
-    status: string
-): Promise<string> {
-    const API_URL = 'http://kopis.or.kr/openApi/restful/pblprfr';
-
+export async function fetchData(startDate: string, endDate: string, genre: string, region: string, status: string): Promise<string> {
+    
     try {
-        const response = await axios.get(API_URL, {
-            params: {
+        const params = {
                 service: process.env.API_KEY,
-                stdate: startDate, // 시작 날짜 (YYYYMMDD)
-                eddate: endDate, // 종료 날짜 (YYYYMMDD)
-                cpage: 1, // 페이지 번호
-                rows: 100, // 페이지당 항목 수
-                genre: genre, // 장르 (필요 시 매핑)
-                region: region, // 지역 (필요 시 매핑)
-                prfstate: status, // 공연 상태 (진행 중, 종료 등)
-            }
-        });
+                stdate: '20240910',
+                eddate: '20241010', 
+                cpage: 1, 
+                rows: 100, 
+                genre: 'GGGA', 
+                region: '11',
+                prfstate: '01', 
+        };
+        const url = `http://www.kopis.or.kr/openApi/restful/pblprfr?service=${apiKey}&stdate=20240910&eddate=20241010&cpage=1&rows=100&prfstate=01&signgucode=11&shcate=GGGA`;
 
-        //console.log(response);
-        console.log('fetchData.ts')
+        const response = await axios.get(url);
+        
+        //console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching data:', error);
         throw error;
     }
 }
+
+export async function fetchDetailData(mt20id: string) {
+    try {
+        const params = {
+            service: apiKey,
+            id: mt20id,
+        };
+
+        const url = `http://www.kopis.or.kr/openApi/restful/pblprfr/${mt20id}?service=${apiKey}`;
+        const response = await axios.get(url);
+        //console.log(url);
+       // console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching detail data:', error);
+        throw error;
+    }
+}
+
+
+ export async function fetchAgencyData(shcate: string) {
+    try {
+        const params = {
+            service: apiKey,
+            shcate:'GGGA'
+        };
+
+        const url = `http://www.kopis.or.kr/openApi/restful/mnfct?service=${apiKey}&shcate=GGGA`;
+        const response = await axios.get(url);
+
+        //console.log(url);
+        //console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching agency data:', error);
+        throw error;
+    }
+}
+
