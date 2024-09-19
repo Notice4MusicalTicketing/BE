@@ -152,7 +152,10 @@ model Wishlist {
   member       Member      @relation(fields: [memberId], references: [memberId])
   musical      Musical     @relation(fields: [musicalId], references: [musicalId])
 
+  // Composite unique constraint
+  @@unique([memberId, musicalId])  // Composite unique constraint
   @@index([memberId], map: "wishlist_member_id_fkey")
   @@index([musicalId], map: "wishlist_musical_id_fkey")
+
   @@map("wishlist")
 }

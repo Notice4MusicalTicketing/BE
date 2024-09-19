@@ -60,7 +60,7 @@ export async function storeData(xmlData: string): Promise<void> {
                 name: agency.relatenm ? agency.relatenm[0] : '',
                 url: agency.relateurl ? agency.relateurl[0] : ''
             })); 
-            console.log('Ticket Agencies:', ticketAgencies);
+            //console.log('Ticket Agencies:', ticketAgencies);
 
             // 데이터베이스에 저장
             await prisma.musical.upsert({
